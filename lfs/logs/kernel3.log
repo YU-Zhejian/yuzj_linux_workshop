@@ -1,8 +1,22 @@
-[    1.595881] Run /init as init process
+[    1.168923] Run /init as init process
+BUSYBOX INITRAMFS LOG: Thu Jul 11 14:36:16 UTC 2024: ====== INITRAMFS PREPARING ======
+BUSYBOX INITRAMFS LOG: Thu Jul 11 14:36:16 UTC 2024: Set PATH environment variable...
+BUSYBOX INITRAMFS LOG: Thu Jul 11 14:36:16 UTC 2024: 1st pass mounting...
 mount: mounting devpts on /dev/pts failed: No such file or directory
+BUSYBOX INITRAMFS LOG: Thu Jul 11 14:36:16 UTC 2024: 2nd pass mounting...
+BUSYBOX INITRAMFS LOG: Thu Jul 11 14:36:16 UTC 2024: Set up root user...
 passwd: password for root changed by root
-====== INITRAMFS READY ======
-params: ${@}
+BUSYBOX INITRAMFS LOG: Thu Jul 11 14:36:16 UTC 2024: Passwordless root setup success.
+BUSYBOX INITRAMFS LOG: Thu Jul 11 14:36:16 UTC 2024: ====== INITRAMFS READY ======
+BUSYBOX INITRAMFS LOG: Thu Jul 11 14:36:16 UTC 2024: Init params: 
+BUSYBOX INITRAMFS LOG: Thu Jul 11 14:36:16 UTC 2024: Environment Variables:
+export HOME='/'
+export PATH='/bin:/usr/bin:/sbin:/usr/sbin'
+export PWD='/'
+export SHLVL='1'
+export TERM='linux'
+BUSYBOX INITRAMFS LOG: Thu Jul 11 14:36:16 UTC 2024: ====== LOOP /sbin/sulogin ======
+BUSYBOX INITRAMFS LOG: Thu Jul 11 14:36:16 UTC 2024: In QEMU, exit through `reboot -f`
 ~ # ls
 ~ # ls -lFh
 total 0      

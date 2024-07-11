@@ -2,9 +2,9 @@
 
 **WARNING**: This lab is very hard for those who do not have experience in operating systems.
 
-This lab was finished on a Linux Mint 21.3 machine with `11.4.0-1ubuntu1~22.04` GCC and `6.5.0-41-generic` kernel.
+**NOTE**: The success construction of the Linux kernel largely depends on multiple factors like the version of compilers, the kernel version of hosting system, and architecture of the host machine, etc. This lab was finished on a Linux Mint 21.3 machine with `11.4.0-1ubuntu1~22.04` GCC and `6.5.0-41-generic` kernel of architecture `x86_64`.
 
-## Configure the Building Process
+## Configure the Linux Kernel
 
 Linux kernel bundles itself with dependencies we may not want.
 
