@@ -1,0 +1,14 @@
+[    1.595881] Run /init as init process
+mount: mounting devpts on /dev/pts failed: No such file or directory
+passwd: password for root changed by root
+====== INITRAMFS READY ======
+params: ${@}
+~ # ls
+~ # ls -lFh
+total 0      
+~ # ls /
+bin      etc      linuxrc  root     sbin     tmp
+dev      init     proc     run      sys
+~ # reboot -f
+[   16.612598] reboot: Restarting system
+[   16.612598] reboot: machine restart

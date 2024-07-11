@@ -1,0 +1,17 @@
+#!/bin/sh
+PATH="/bin:/usr/bin:/sbin:/usr/sbin"
+export PATH
+
+mkdir -p /dev /run /sys /proc /tmp
+mount -a || true
+mkdir -p /dev/pts
+mount -a
+
+touch /etc/group /etc/passwd /etc/shadow
+addgroup -g 0 -S root
+adduser -h /root -s /bin/sh -u 0 -G root -S root
+passwd root -d
+
+echo "====== INITRAMFS READY ======"
+echo "params: \${@}"
+while true; do /sbin/sulogin; done

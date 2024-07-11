@@ -1,0 +1,168 @@
+[    0.000000] Linux version 4.19.317 (yuzj@yuzj-HP-ENVY-x360-Convertible-15-dr1xxx) (gcc version 11.4.0 (Ubuntu 11.4.0-1ubuntu1~22.04)) #1 SMP Thu 4
+[    0.000000] Command line: nokaslr console=tty0 console=ttyS0,115200
+[    0.000000] BIOS-provided physical RAM map:
+[    0.000000] BIOS-e820: [mem 0x0000000000000000-0x000000000009fbff] usable
+[    0.000000] BIOS-e820: [mem 0x000000000009fc00-0x000000000009ffff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000000f0000-0x00000000000fffff] reserved
+[    0.000000] BIOS-e820: [mem 0x0000000000100000-0x000000007ffdffff] usable
+[    0.000000] BIOS-e820: [mem 0x000000007ffe0000-0x000000007fffffff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000fffc0000-0x00000000ffffffff] reserved
+[    0.000000] NX (Execute Disable) protection: active
+[    0.000000] SMBIOS 2.8 present.
+[    0.000000] DMI: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1 04/01/2014
+[    0.000000] tsc: Fast TSC calibration using PIT
+[    0.000000] tsc: Detected 2918.178 MHz processor
+[    0.004099] last_pfn = 0x7ffe0 max_arch_pfn = 0x400000000
+[    0.004875] x86/PAT: Configuration [0-7]: WB  WC  UC- UC  WB  WP  UC- WT  
+[    0.011440] found SMP MP-table at [mem 0x000f5ba0-0x000f5baf]
+[    0.012237] Scanning 1 areas for low memory corruption
+[    0.014990] No NUMA configuration found
+[    0.015010] Faking a node at [mem 0x0000000000000000-0x000000007ffdffff]
+[    0.015491] NODE_DATA(0) allocated [mem 0x7ffdc000-0x7ffdffff]
+[    0.017346] Zone ranges:
+[    0.017399]   DMA      [mem 0x0000000000001000-0x0000000000ffffff]
+[    0.017432]   DMA32    [mem 0x0000000001000000-0x000000007ffdffff]
+[    0.017438]   Normal   empty
+[    0.017449] Movable zone start for each node
+[    0.017472] Early memory node ranges
+[    0.017496]   node   0: [mem 0x0000000000001000-0x000000000009efff]
+[    0.017507]   node   0: [mem 0x0000000000100000-0x000000007ffdffff]
+[    0.018313] Zeroed struct page in unavailable ranges: 130 pages
+[    0.018451] Initmem setup node 0 [mem 0x0000000000001000-0x000000007ffdffff]
+[    0.046591] Intel MultiProcessor Specification v1.4
+[    0.046667] MPTABLE: OEM ID: BOCHSCPU
+[    0.046680] MPTABLE: Product ID: 0.1         
+[    0.046688] MPTABLE: APIC at: 0xFEE00000
+[    0.046826] Processor #0 (Bootup-CPU)
+[    0.047221] IOAPIC[0]: apic_id 0, version 32, address 0xfec00000, GSI 0-23
+[    0.047342] Processors: 1
+[    0.047429] smpboot: Allowing 1 CPUs, 0 hotplug CPUs
+[    0.048093] [mem 0x80000000-0xfffbffff] available for PCI devices
+[    0.048352] clocksource: refined-jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 1910969940391419 ns
+[    0.262990] setup_percpu: NR_CPUS:64 nr_cpumask_bits:64 nr_cpu_ids:1 nr_node_ids:1
+[    0.266788] percpu: Embedded 44 pages/cpu s150808 r0 d29416 u2097152
+[    0.268504] Built 1 zonelists, mobility grouping on.  Total pages: 515945
+[    0.268516] Policy zone: DMA32
+[    0.268637] Kernel command line: nokaslr console=tty0 console=ttyS0,115200
+[    0.283783] Memory: 2044888K/2096632K available (8200K kernel code, 614K rwdata, 1160K rodata, 912K init, 2736K bss, 51744K reserved, 0K cma-rese)
+[    0.287128] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=1, Nodes=1
+[    0.292547] rcu: Hierarchical RCU implementation.
+[    0.292561] rcu:     RCU event tracing is enabled.
+[    0.292582] rcu:     RCU restricting CPUs from NR_CPUS=64 to nr_cpu_ids=1.
+[    0.292658] rcu: Adjusting geometry for rcu_fanout_leaf=16, nr_cpu_ids=1
+[    0.293751] NR_IRQS: 4352, nr_irqs: 48, preallocated irqs: 16
+[    0.300266] Console: colour VGA+ 80x25
+[    0.301807] console [tty0] enabled
+[    0.306946] console [ttyS0] enabled
+[    0.308065] APIC: Switch to symmetric I/O mode setup
+[    0.313876] ..TIMER: vector=0x30 apic1=0 pin1=2 apic2=-1 pin2=-1
+[    0.319294] clocksource: tsc-early: mask: 0xffffffffffffffff max_cycles: 0x2a1057860ec, max_idle_ns: 440795355793 ns
+[    0.319668] Calibrating delay loop (skipped), value calculated using timer frequency.. 5836.35 BogoMIPS (lpj=2918178)
+[    0.322617] process: using AMD E400 aware idle routine
+[    0.322812] Last level iTLB entries: 4KB 512, 2MB 255, 4MB 127
+[    0.322910] Last level dTLB entries: 4KB 512, 2MB 255, 4MB 127, 1GB 0
+[    0.323117] Spectre V1 : Mitigation: usercopy/swapgs barriers and __user pointer sanitization
+[    0.323355] Spectre V2 : Mitigation: Enhanced / Automatic IBRS
+[    0.323451] Spectre V2 : Spectre v2 / SpectreRSB mitigation: Filling RSB on context switch
+[    0.324583] x86/fpu: x87 FPU will use FXSAVE
+[    0.435113] Freeing SMP alternatives memory: 20K
+[    0.435377] pid_max: default: 32768 minimum: 301
+[    0.437891] Security Framework initialized
+[    0.440850] Dentry cache hash table entries: 262144 (order: 9, 2097152 bytes)
+[    0.441413] Inode-cache hash table entries: 131072 (order: 8, 1048576 bytes)
+[    0.441711] Mount-cache hash table entries: 4096 (order: 3, 32768 bytes)
+[    0.441858] Mountpoint-cache hash table entries: 4096 (order: 3, 32768 bytes)
+[    0.663583] smpboot: CPU0: AMD QEMU Virtual CPU version 2.5+ (family: 0xf, model: 0x6b, stepping: 0x1)
+[    0.667128] Performance Events: PMU not available due to virtualization, using software events only.
+[    0.668632] rcu: Hierarchical SRCU implementation.
+[    0.670182] smp: Bringing up secondary CPUs ...
+[    0.670311] smp: Brought up 1 node, 1 CPU
+[    0.670388] smpboot: Max logical packages: 1
+[    0.670488] smpboot: Total of 1 processors activated (5836.35 BogoMIPS)
+[    0.678872] devtmpfs: initialized
+[    0.683122] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 1911260446275000 ns
+[    0.683490] futex hash table entries: 256 (order: 2, 16384 bytes)
+[    0.692313] cpuidle: using governor menu
+[    0.696840] kworker/u2:0 (16) used greatest stack depth: 14904 bytes left
+[    0.702761] kworker/u2:1 (17) used greatest stack depth: 14104 bytes left
+[    0.804485] HugeTLB registered 2.00 MiB page size, pre-allocated 0 pages
+[    0.816974] SCSI subsystem initialized
+[    0.830419] clocksource: Switched to clocksource tsc-early
+[    0.937472] VFS: Disk quotas dquot_6.6.0
+[    0.938294] VFS: Dquot-cache hash table entries: 512 (order 0, 4096 bytes)
+[    1.020338] platform rtc_cmos: registered platform RTC device (no PNP device found)
+[    1.026498] Scanning for low memory corruption every 60 seconds
+[    1.044745] Initialise system trusted keyrings
+[    1.049796] workingset: timestamp_bits=56 max_order=19 bucket_order=0
+[    1.115522] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+[    1.141737] Key type asymmetric registered
+[    1.142381] Asymmetric key parser 'x509' registered
+[    1.143663] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 253)
+[    1.144654] io scheduler noop registered
+[    1.145103] io scheduler deadline registered
+[    1.146774] io scheduler cfq registered (default)
+[    1.147442] io scheduler mq-deadline registered
+[    1.147823] io scheduler kyber registered
+[    1.153339] Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
+�[    1.440417] serial8250: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
+[    1.449487] Non-volatile memory driver v1.3
+[    1.534466] brd: module loaded
+[    1.569245] loop: module loaded
+[    1.594005] null: module loaded
+[    1.609387] serio: i8042 KBD port at 0x60,0x64 irq 1
+[    1.610358] serio: i8042 AUX port at 0x60,0x64 irq 12
+[    1.630927] rtc_cmos rtc_cmos: registered as rtc0
+[    1.633657] input: AT Translated Set 2 keyboard as /devices/platform/i8042/serio0/input/input0
+[    1.634816] rtc_cmos rtc_cmos: alarms up to one day, 114 bytes nvram
+[    1.640196] hidraw: raw HID events driver (C) Jiri Kosina
+[    1.659212] mce: Using 10 MCE banks
+[    1.661671] sched_clock: Marking stable (1646882917, 14009133)->(1664273843, -3381793)
+[    1.666584] Loading compiled-in X.509 certificates
+[    1.694267] VFS: Cannot open root device "(null)" or unknown-block(0,0): error -6
+[    1.694783] Please append a correct "root=" boot option; here are the available partitions:
+[    1.695934] 0100            4096 ram0 
+[    1.695950]  (driver?)
+[    1.696466] 0101            4096 ram1 
+[    1.696468]  (driver?)
+[    1.696794] 0102            4096 ram2 
+[    1.696795]  (driver?)
+[    1.697247] 0103            4096 ram3 
+[    1.697248]  (driver?)
+[    1.697637] 0104            4096 ram4 
+[    1.697638]  (driver?)
+[    1.698090] 0105            4096 ram5 
+[    1.698091]  (driver?)
+[    1.698479] 0106            4096 ram6 
+[    1.698480]  (driver?)
+[    1.698916] 0107            4096 ram7 
+[    1.698926]  (driver?)
+[    1.699439] 0108            4096 ram8 
+[    1.699441]  (driver?)
+[    1.699827] 0109            4096 ram9 
+[    1.699828]  (driver?)
+[    1.700295] 010a            4096 ram10 
+[    1.700296]  (driver?)
+[    1.700687] 010b            4096 ram11 
+[    1.700688]  (driver?)
+[    1.701134] 010c            4096 ram12 
+[    1.701136]  (driver?)
+[    1.701521] 010d            4096 ram13 
+[    1.701522]  (driver?)
+[    1.702033] 010e            4096 ram14 
+[    1.702034]  (driver?)
+[    1.702423] 010f            4096 ram15 
+[    1.702424]  (driver?)
+[    1.703145] Kernel panic - not syncing: VFS: Unable to mount root fs on unknown-block(0,0)
+[    1.704253] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 4.19.317 #1
+[    1.704693] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1 04/01/2014
+[    1.705471] Call Trace:
+[    1.708327]  dump_stack+0x50/0x63
+[    1.708707]  panic+0xef/0x23d
+[    1.709559]  mount_block_root+0x213/0x2b3
+[    1.710003]  prepare_namespace+0x161/0x197
+[    1.710276]  kernel_init_freeable+0x1e1/0x1ef
+[    1.710588]  ? rest_init+0x9a/0x9a
+[    1.710794]  kernel_init+0x5/0xf0
+[    1.711054]  ret_from_fork+0x1f/0x40
+[    1.712610] Kernel Offset: disabled
+[    1.713452] ---[ end Kernel panic - not syncing: VFS: Unable to mount root fs on unknown-block(0,0) ]---
