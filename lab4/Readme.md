@@ -12,22 +12,30 @@ This lab allows you to build a Linux kernel from scratch and run it using PC emu
 
 ## Learning Objectives
 
-- Understand the relationship between filesystem, kernel, binary and shell.
+- Understand the relationship between the filesystem, kernel, and shell.
 - Knowing the basis of Linux booting process.
 - Gain experience on compiling large C projects.
 
-## Install Required Dependencies
+## Files in this Directory
 
-See instructions at [here](https://www.kernel.org/doc/html/v4.19/process/changes.html#minimal-requirements-to-compile-the-kernel).
+- `linux.ini`: Configuration file for building the Linux kernel.
+- `busybox.ini`: Configuration file for building static BusyBox.
+- `hello.c`: A hello world program in C.
+- `logs`: Kernel logs from QEMU.
+- `busybox_initramfs`: File system tree for BusyBox initramfs.
+- `src`: External source files.
+- `opt`: Installation path of various packages.
 
-For running the generated kernel and initramfs using virtual machine, install [QEMU](https://www.qemu.org) and [GNU cpio](https://www.gnu.org/software/cpio/).
+## Dependencies
+
+Get files using `src/reproduce.sh`. For building the kernel, see [this](https://www.kernel.org/doc/html/v4.19/process/changes.html#minimal-requirements-to-compile-the-kernel). For running the generated kernel and initramfs using virtual machine, install [QEMU](https://www.qemu.org) and [GNU cpio](https://www.gnu.org/software/cpio/).
 
 ## Configure the Linux Kernel
 
 The Linux kernel is bundled with diverse drivers that are not needed for this small lab. A pre-configured version can be used via:
 
 ```shell
-cp lfs/linux.conf src/linux-4.19.317/.config
+cp lab4/linux.ini src/linux-4.19.317/.config
 ```
 
 This configuration is based on the configuration generated using `make -j8 -C src/linux-4.19.317 x86_64_defconfig` by removing network, graphics and sound related drivers, with the addition of [SquashFS](http://www.squashfs.org/) driver (although not used).
@@ -91,7 +99,7 @@ Now we will compile a static hello world program against the installed Musl C li
 mkdir -p opt/hello_world_initramfs
 opt/musl-1.2.5/bin/musl-gcc \
     -static -static-libgcc \
-    lfs/hello.c \
+    lab4/hello.c \
     -o opt/hello_world_initramfs/init
 # Optional: Strip the compiled binary to reduce size.
 strip opt/hello_world_initramfs/init
@@ -126,7 +134,7 @@ Now we will build an initramfs that have a shell and some basic utilities inside
 
 ```shell
 # The default config do not contain network-related applications, rpm and dpkg.
-cp lfs/busybox.conf src/busybox-1.36.1/.config
+cp lab4/busybox.ini src/busybox-1.36.1/.config
 
 # Also: if you wish to make your own
 # make -j8 -C src/busybox-1.36.1 defconfig
@@ -140,7 +148,7 @@ make -j8 -C src/busybox-1.36.1 busybox install \
 
 # Pack initramfs
 printf '' | cpio -ov -H newc > opt/busybox_initramfs.cpio
-for dir in opt/busybox-1.36.1-static lfs/busybox_initramfs; do
+for dir in opt/busybox-1.36.1-static lab4/busybox_initramfs; do
     find "${dir}" | \
         sed 's;'"${dir}"';.;' | \
         cpio -A -ov -D "$(pwd)/${dir}" -H newc \

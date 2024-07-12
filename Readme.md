@@ -30,12 +30,11 @@ Compiling \& Linking:
 
 Building systems:
 
-- [GNU Make](https://www.gnu.org/software/make/) for `make`. BSD Make on macOS and \*BSD will not work.
+- [GNU Make](https://www.gnu.org/software/make/) for `make`. BSD Make on macOS and \*BSD will **NOT** work.
 - [CMake](https://cmake.org/) for `cmake`.
 
 Downloading files:
 
-- [Git](https://git-scm.com) for cloning this repository.
 - [GNU Wget](https://www.gnu.org/software/wget/) for `wget`, which downloads required files.
 
 Compression:
@@ -48,3 +47,9 @@ Compression:
 ### Download External Resources
 
 After installing all packages, execute `src/reproduce.sh` in `src` to fetch all external resources.
+
+### Organization of Files
+
+- `src` contains external source files.
+- `opt` contain installation directory of various tools in those labs.
+- Other directories contain supporting materials for each lab.

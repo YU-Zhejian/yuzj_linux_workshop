@@ -1,7 +1,9 @@
 #!/bin/sh
 # The initialization script for BusyBox initramfs
+# shellcheck disable=SC2016
+
 __iflog(){
-    echo "BUSYBOX INITRAMFS LOG: $(/bin/date): ${@}"
+    echo "BUSYBOX INITRAMFS LOG: $(/bin/date): ${*}"
 }
 
 __iflog "====== INITRAMFS PREPARING ======"
@@ -25,7 +27,7 @@ passwd root -d
 __iflog "Passwordless root setup success."
 
 __iflog "====== INITRAMFS READY ======"
-__iflog "Init params: ${@}"
+__iflog "Init params: ${*}"
 __iflog "Environment Variables:"
 export
 
