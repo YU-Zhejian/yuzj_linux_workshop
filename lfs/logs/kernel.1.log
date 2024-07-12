@@ -104,7 +104,7 @@
 [    1.147442] io scheduler mq-deadline registered
 [    1.147823] io scheduler kyber registered
 [    1.153339] Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
-�[    1.440417] serial8250: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
+?[    1.440417] serial8250: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
 [    1.449487] Non-volatile memory driver v1.3
 [    1.534466] brd: module loaded
 [    1.569245] loop: module loaded

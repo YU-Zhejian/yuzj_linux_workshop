@@ -4,7 +4,7 @@
 
 Change working directory into `src/bwa-debian-0.7.17-7`.
 
-For GCC later than or equal to 10, apply required patch by:
+For GCC later than or equal to 10, apply a required patch by:
 
 ```shell
 patch  < debian/patches/gcc10.patch
