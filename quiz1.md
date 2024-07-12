@@ -1,15 +1,13 @@
 # Quiz on Shell
 
-Ver 0.3
-
-Based on Version 0.2 in 2022 summer program.
+Ver 0.3; Based on 0.2 in 2022 summer program.
 
 [TOC]
 
 ## Assumptions
 
 1. GNU Bash >= 4.4.
-2. GNU CoreUtils, GNU BC, GNU Grep, GNU Sed, and GNU AWK.
+2. GNU CoreUtils, GNU Grep, GNU Sed, and GNU AWK.
 3. Except _GNU Bash Reference_, _POSIX Reference_ and the manual/info pages of all above software, no external documentation or internet access is allowed.
 
 ## Short Answer Questions
@@ -18,8 +16,8 @@ Based on Version 0.2 in 2022 summer program.
 2. Explain the differences between `$(which ls) -1 .` and `find . -maxdepth 1`.
 3. If variable `A` is array, explain the differences between `${A}`, `${A[*]}`, `${A[@]}`.
 4. Explain difference between `'` and `"`.
-5. `echo`, `kill` and `time` are both builtin and external. Explain the difference. How can we ensure the command we get is the desired one?
-6. Given the following Shell script:
+5. Commands like `echo`, `kill` and `time` can be provided by both shell builtin and external binary. Explain the difference between shell builtin and external binary. How can we ensure the command we get is the desired one?
+6. Given the following shell script:
 
    ```bash
    #!/usr/bin/env bash
@@ -31,9 +29,9 @@ Based on Version 0.2 in 2022 summer program.
    echo "${RESULT}"
    ```
 
-   Why variable `RESULT` is 0 after the script finishes? Modify the program to make it 10.
+   Why variable `RESULT` is `0` after the script finishes? Modify the program to make it `10`.
 
-7. Some random people on internet may tell you to use `set -ueo pipefail` to terminate Shell on error. However, the following script for getting 10 `y`s contains would terminate with exit value 1. Why?
+7. The following script for getting 10 `y`s would terminate with exit value 1. Why?
 
    ```bash
    #!/usr/bin/env bash
@@ -41,7 +39,7 @@ Based on Version 0.2 in 2022 summer program.
    yes | head -n 10
    ```
 
-8. Given the following Shell script:
+8. Given the following shell script:
 
    ```bash
    #!/usr/bin/env bash
@@ -49,21 +47,21 @@ Based on Version 0.2 in 2022 summer program.
    some_complex_command || true
    ```
 
-   Explain `true` statement here.
+   Explain why `|| true` statement is placed here.
 
-9. Given the following Shell statement:
+9. Given the following shell statement:
 
    ```bash
    command_1 && command_2 || command_3
    ```
 
-   Explain how it differes with the folloiwng:
+   Explain how it differs with the following:
 
    ```bash
    if command_1; then command_2; else command_3; fi
    ```
 
-10. The following Shell scripts are designed to create `1.sh` if it does not exist, and do nothing otherwise. Explain the difference between those scripts.
+10. The following shell scripts are designed to create `1.sh` if it does not exist, and do nothing otherwise. Explain the difference between those scripts.
 
    ```bash
    #!/usr/bin/env bash
@@ -101,7 +99,7 @@ A bioinformatician may extract compressed files or archives of diverse formats. 
 | `unrar`                      | `rar`      |
 | `unzip`                      | `zip`      |
 
-Write a program in Shell to automatically extract files based on extensions. If multiple extractors are available for recognized format, the program should try from most favourable program to least, and throw error if no suitable program is found or if the format is not recognized. The program should be able to recognize and extract combo formats listed as well:
+Write a program in shell to automatically extract files based on extensions. If multiple extractors are available for recognized format, the program should try from most favourable program to least, and throw error if no suitable program is found or if the format is not recognized. The program should be able to recognize and extract combo formats listed as well:
 
 - `tar.gz` (`tgz`)
 - `tar.bz2` (`tbz`)

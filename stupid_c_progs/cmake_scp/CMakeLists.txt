@@ -3,6 +3,7 @@ project(
     stupid_c_progs
     VERSION 0.1
     LANGUAGES C)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 macro(ceu_cm_set_static_target name)
     set_target_properties("${name}" PROPERTIES LINK_SEARCH_START_STATIC 1)

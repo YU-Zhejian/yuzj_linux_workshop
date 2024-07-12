@@ -23,7 +23,7 @@ Basis:
 - [GNU Bourne-Again Shell (Bash)](https://www.gnu.org/software/bash/) for `bash`. Using [Z Shell](https://www.zsh.org/) (zsh) **MAY** work; Using POSIX Bourne Shell, Korn Shell (ksh), or C Shell (csh) will **NOT** work.
 - [GNU DiffUtils](https://www.gnu.org/software/diffutils/) and [GNU Patch](https://www.gnu.org/software/patch/) for `diff` and `patch`.
 
-COmpiling \& Linking:
+Compiling \& Linking:
 
 - [GNU Compiler Collection (GCC)](https://gcc.gnu.org/). Need at least `gcc` and `g++`.
 - [GNU BinUtils](https://www.gnu.org/software/binutils/) for linker (`ln`) and ELF executable reader (`readelf`).
@@ -41,7 +41,6 @@ Downloading files:
 Compression:
 
 - [GNU Tar](https://www.gnu.org/software/tar/) for `tar`.
-- [GNU cpio](https://www.gnu.org/software/cpio/) for `cpio`.
 - [GNU GZip](https://www.gnu.org/software/gzip/) for `gzip`.
 - [XZ Utils](http://tukaani.org/xz/) for `xz`. Beware of the [XZ Backdoor](https://nvd.nist.gov/vuln/detail/CVE-2024-3094).
 - [bzip2](https://sourceware.org/bzip2) for `bzip2`.

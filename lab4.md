@@ -20,7 +20,7 @@ This lab allows you to build a Linux kernel from scratch and run it using PC emu
 
 See instructions at [here](https://www.kernel.org/doc/html/v4.19/process/changes.html#minimal-requirements-to-compile-the-kernel).
 
-For running the generated kernel using virtual machine, install [QEMU](https://www.qemu.org).
+For running the generated kernel and initramfs using virtual machine, install [QEMU](https://www.qemu.org) and [GNU cpio](https://www.gnu.org/software/cpio/).
 
 ## Configure the Linux Kernel
 

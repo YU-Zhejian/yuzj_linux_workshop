@@ -2,25 +2,29 @@
 
 # Install prefix that SHOULD NOT CONTAIN BLANKS
 PREFIX := "$(PWD)/opt"
+CC := gcc
+CFLAGS := -O2 -Wall -Wextra
+LDFLAGS :=
 
 .PHONY: all
-all: $(CURDIR)/main
+all: main
 
-$(CURDIR)/%.lo: $(CURDIR)/../src/%.c $(CURDIR)/../src/stupid.h
-	libtool --mode=compile gcc -c $<
+%.lo: ../src/%.c
+	libtool --tag=CC --mode=compile $(CC) $(CFLAGS) -c $<
 
-$(CURDIR)/lib%.la: $(CURDIR)/%.lo
-	libtool --mode=link gcc -o $@ $< -rpath $(PREFIX)/lib/
+lib%.la: %.lo
+	libtool --tag=CC --mode=link $(CC) $(LDFLAGS) -o $@ $< -rpath $(PREFIX)/lib/
 
-$(CURDIR)/main: $(CURDIR)/libstupid.la $(CURDIR)/main.lo
-	libtool --mode=link gcc -o main $^
+main: libstupid.la main.lo
+	libtool --tag=CC --mode=link $(CC) $(LDFLAGS) -o main $^
 
 .PHONY: clean
 clean:
-	rm -fr $(CURDIR)/*.o $(CURDIR)/*.lo $(CURDIR)/.libs $(CURDIR)/*.la $(CURDIR)/main
+	rm -fr *.o *.lo .libs *.la main
 
 .PHONY: install
 install: all
-	libtool --mode=install install -D $(CURDIR)/libstupid.la $(PREFIX)/lib/libstupid.la
-	libtool --mode=install install -D $(CURDIR)/main $(PREFIX)/bin/main
+	libtool --mode=install install -D libstupid.la $(PREFIX)/lib/libstupid.la
+	libtool --mode=install install -D main $(PREFIX)/bin/main
+	install -D ../src/stupid.h $(PREFIX)/include/stupid.h
 	libtool --finish $(PREFIX)/lib/
