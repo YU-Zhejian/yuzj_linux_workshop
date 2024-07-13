@@ -3,7 +3,7 @@
 # shellcheck disable=SC2016
 
 __iflog(){
-    echo "BUSYBOX INITRAMFS LOG: $(/bin/date): ${*}"
+    echo "BUSYBOX INITRAMFS LOG: $(/bin/date '+%Y-%m-%d %H:%M:%S'): ${*}"
 }
 
 __iflog "====== INITRAMFS PREPARING ======"

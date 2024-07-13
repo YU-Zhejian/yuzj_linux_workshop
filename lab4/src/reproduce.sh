@@ -2,9 +2,9 @@
 set -ue
 cd "$(readlink -f "$(dirname "${0}")")"
 
-wget https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.19.317.tar.xz
-wget https://musl.libc.org/releases/musl-1.2.5.tar.gz
-wget https://busybox.net/downloads/busybox-1.36.1.tar.bz2
+wget -4 https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.19.317.tar.xz
+wget -4 https://musl.libc.org/releases/musl-1.2.5.tar.gz
+wget -4 https://busybox.net/downloads/busybox-1.36.1.tar.bz2
 
 for fn in ./*.tar.bz2; do
     tar xvjf "${fn}"

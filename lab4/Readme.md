@@ -4,9 +4,11 @@ This lab allows you to build a Linux kernel from scratch and run it using PC emu
 
 **WARNING**: This lab is tough for those who do not have experience in operating systems.
 
-**NOTE**: The success construction of the Linux kernel largely depends on multiple factors like the version of compilers, the kernel version of the hosting system, and architecture of the host machine, etc. This lab was finished on a Linux Mint 21.3 machine with `11.4.0-1ubuntu1~22.04` GCC and `6.5.0-41-generic` kernel of architecture `x86_64`.
+**NOTE**: The success construction of the Linux kernel largely depends on multiple factors like the version of compilers, the kernel version of the hosting system, and architecture of the host machine, etc. This lab was tested on:
+- Linux Mint 21.3 machine with `11.4.0-1ubuntu1~22.04` GCC and `6.5.0-41-generic` kernel of architecture `x86_64`.
+- Debian Testing with `Debian 13.3.0-1` GCC and `Debian 6.5.6-1` kernel of architecture `x86_64`.
 
-**NOTE**: This version uses the earliest supporting LTS kernel, 4.19. In case of errors, consult documentation [here](https://www.kernel.org/doc/html/v4.19/).
+**NOTE**: This version uses the earliest supporting LTS kernel, 4.19, whose End-Of-Life is at 2024/12. In case of errors, consult documentation [here](https://www.kernel.org/doc/html/v4.19/).
 
 **Also see**: The [Linux from Scratch](https://www.linuxfromscratch.org/) (LFS) Project.
 
@@ -35,7 +37,7 @@ Get files using `src/reproduce.sh`. For building the kernel, see [this](https://
 The Linux kernel is bundled with diverse drivers that are not needed for this small lab. A pre-configured version can be used via:
 
 ```shell
-cp lab4/linux.ini src/linux-4.19.317/.config
+cp linux.ini src/linux-4.19.317/.config
 ```
 
 This configuration is based on the configuration generated using `make -j8 -C src/linux-4.19.317 x86_64_defconfig` by removing network, graphics and sound related drivers, with the addition of [SquashFS](http://www.squashfs.org/) driver (although not used).
@@ -54,12 +56,13 @@ make -j8 -C src/linux-4.19.317 menuconfig
 
 ## Build Linux Kernel
 
-Now we build the kernel and install Linux headers for developmental purposes.
+Now we build the kernel and install Linux headers for developmental purposes. `env -i` was used to execute building process in a clean environment.
 
 ```shell
-make -j8 -C src/linux-4.19.317 bzImage \
-    C_INCLUDE_PATH="/usr/include"
-make -j8 -C src/linux-4.19.317 headers_install \
+env -i PATH="/usr/bin" \
+    make -j8 -C src/linux-4.19.317 bzImage
+env -i PATH="/usr/bin"  \
+    make -j8 -C src/linux-4.19.317 headers_install \
     ARCH=x86_64 \
     INSTALL_HDR_PATH="$(pwd)/opt/linux_headers"
 ```
@@ -76,15 +79,16 @@ qemu-system-x86_64 \
     -nographic
 ```
 
-The kernel will boot and panic since no root filesystem was specified. See `lfs/logs/kernel.1.log` for the log on my system. Don't forget to terminate the QEMU emulator with `kill`.
+The kernel will boot and panic since no root filesystem was specified. See `logs/kernel.1.log` for the log on my system. Don't forget to terminate the QEMU emulator with `kill`.
 
 ## Building a Small C Library on the Kernel
 
 Almost all applications would work a C library (`libc`), so building such is important. For simplicity and size, we choose [Musl](https://musl.libc.org/) as our C library. Enter `src/musl-1.2.5`, and run:
 
 ```shell
-./configure  --prefix="$(pwd)/../../opt/musl-1.2.5"
-make -j8 install
+env -i PATH="/usr/bin" \
+    ./configure  --prefix="$(pwd)/../../opt/musl-1.2.5"
+env -i PATH="/usr/bin" make -j8 install
 ```
 
 and a Musl C library together with its development tools and headers will be installed to `opt/musl-1.2.5`.
@@ -97,9 +101,10 @@ Now we will compile a static hello world program against the installed Musl C li
 
 ```shell
 mkdir -p opt/hello_world_initramfs
-opt/musl-1.2.5/bin/musl-gcc \
+env -i PATH="/usr/bin" \
+    opt/musl-1.2.5/bin/musl-gcc \
     -static -static-libgcc \
-    lab4/hello.c \
+    hello.c \
     -o opt/hello_world_initramfs/init
 # Optional: Strip the compiled binary to reduce size.
 strip opt/hello_world_initramfs/init
@@ -126,7 +131,7 @@ qemu-system-x86_64 \
     -nographic
 ```
 
-The init process successfully printed "Hello world!" and exit, which results in kernel panic. See `lfs/logs/kernel.2.log` for details.
+The init process successfully printed "Hello world!" and exit, which results in kernel panic. See `logs/kernel.2.log` for details.
 
 ## The BusyBox initramfs
 
@@ -134,21 +139,22 @@ Now we will build an initramfs that have a shell and some basic utilities inside
 
 ```shell
 # The default config do not contain network-related applications, rpm and dpkg.
-cp lab4/busybox.ini src/busybox-1.36.1/.config
+make -j8 -C src/busybox-1.36.1 defconfig # This step is mandatory
+cp busybox.ini src/busybox-1.36.1/.config
 
 # Also: if you wish to make your own
-# make -j8 -C src/busybox-1.36.1 defconfig
 # make -j8 -C src/busybox-1.36.1 menuconfig
 
 # Build MUSL
-make -j8 -C src/busybox-1.36.1 busybox install \
+env -i PATH="/usr/bin" \
+    make -j8 -C src/busybox-1.36.1 busybox install \
     CONFIG_PREFIX="$(pwd)/opt/busybox-1.36.1-static" \
     CC="$(pwd)/opt/musl-1.2.5/bin/musl-gcc" \
     C_INCLUDE_PATH="$(pwd)/opt/linux_headers/include"
 
 # Pack initramfs
 printf '' | cpio -ov -H newc > opt/busybox_initramfs.cpio
-for dir in opt/busybox-1.36.1-static lab4/busybox_initramfs; do
+for dir in opt/busybox-1.36.1-static busybox_initramfs; do
     find "${dir}" | \
         sed 's;'"${dir}"';.;' | \
         cpio -A -ov -D "$(pwd)/${dir}" -H newc \
