@@ -1,5 +1,12 @@
 # Lab 3: Install C Programs from Source
 
+Before progression, execute `src/reproduce.sh` and `opt/reproduce.sh` to download all external resources.
+
+## Folders inside this Lab
+
+- `src`: External source files.
+- `opt`: Built packages.
+
 ## Install ZLib
 
 ```shell
@@ -14,7 +21,7 @@ cd ../../
 
 Change working directory into `src/bwa-debian-0.7.17-7`.
 
-For GCC later than or equal to 10, apply a required patch by:
+For GCC later than or equal to 10 (check through `gcc --version`), apply a required patch by:
 
 ```shell
 patch < debian/patches/gcc10.patch
@@ -66,12 +73,16 @@ Note: To use BWA, you need to first index the genome with `bwa index'.
       first. Please `man ./bwa.1' for the manual.
 ```
 
-We may further find and read its manual using:
+We may further find its manual using:
 
 ```shell
 env -i PATH="/usr/bin/" MANPATH="opt/lab3/share/man" man -w bwa # Display the path to desired manual file.
 # Shows: /home/yuzj/Documents/yuzj_linux_workshop/lab3/opt/lab3/share/man/man1/bwa.1
+```
 
+And read it using (VS Code users may see `WARNING: terminal is not fully functional`):
+
+```shell
 env -i PATH="/usr/bin/" MANPATH="opt/lab3/share/man" man bwa
 ```
 
@@ -81,7 +92,7 @@ We may see libraries linked to `bwa` through `ldd`:
 env -i PATH="/usr/bin/" ldd opt/lab3/bin/bwa
 ```
 
-Shows:
+Shows (`libpthread` is integrated into `libc`):
 
 ```text
         linux-vdso.so.1 (0x00007ffde534e000)
@@ -89,6 +100,18 @@ Shows:
         libz.so.1 => /home/yuzj/Documents/yuzj_linux_workshop/lab3/src/bwa-debian-0.7.17-7/../../opt/lab3/lib/libz.so.1 (0x00007f32d878d000)
         libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f32d85a8000)
         /lib64/ld-linux-x86-64.so.2 (0x00007f32d8926000)
+```
+
+Or:
+
+```text
+        linux-vdso.so.1 (0x00007fffa5fe8000)
+        libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f0123cdc000)
+        libz.so.1 => /mnt/volume0/yuzj_linux_workshop/lab3/src/bwa-debian-0.7.17-7/../../opt/lab3/lib/libz.so.1 (0x00007f0123cbe000)
+        libpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f0123c9b000)
+        librt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x00007f0123c91000)
+        libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f0123a9f000)
+        /lib64/ld-linux-x86-64.so.2 (0x00007f0123eac000)
 ```
 
 Or `readelf`:
@@ -108,7 +131,7 @@ Shows:
 
 ## Example of GNU AutoTools: SAMtools
 
-We first build HTSLib. Entering `src/htslib-1.20`, we run:
+Although SAMtools have a bundled HTSLib, we will build our own since the default configuration involves libraries that may not have been built. Entering `src/htslib-1.20`, we run:
 
 ```shell
 env -i PATH="/usr/bin" ./configure \
@@ -125,6 +148,8 @@ env -i PATH="/usr/bin" ./configure \
 env -i PATH="/usr/bin" make -j8
 env -i PATH="/usr/bin" make -j8 install
 ```
+
+Note the `LDFLAGS` and `CFLAGS` variable we added.
 
 Now HTSLib is installed to `opt/lab3`. Go back to current directory, observe its linked libraries using:
 
@@ -158,7 +183,7 @@ env -i PATH="/usr/bin" make -j8 install
 Now SAMtools should be installed. Let's see whether it works.
 
 ```shell
-oenv -i PATH="opt/lab3/bin/" samtools version
+env -i PATH="opt/lab3/bin/" samtools version
 ```
 
 Gives:
@@ -193,22 +218,19 @@ HTSlib URL scheme handlers present:
 
 ## Example of CMake: kAlign
 
-Make installation folder:
-
-```shell
-mkdir -p opt/kalign-debian-1_3.4.0
-```
-
-Enter `src/kalign-debian-1%3.4.0-1/`, and run:
+Enter `src/kalign-debian-1%3.4.0-1`, and run:
 
 ```shell
 mkdir -p build
 cd build
-env -i PATH="/usr/bin" cmake .. -DCMAKE_INSTALL_PREFIX="$(pwd)/../../../opt/kalign-debian-1_3.4.0"
-env -i PATH="/usr/bin" make -j8 install
+env -i PATH="$(pwd)/../../../opt/cmake-3.30.0-linux-x86_64/bin:/usr/bin" \
+    cmake .. \
+    -DCMAKE_INSTALL_PREFIX="$(pwd)/../../../opt/kalign-debian-1_3.4.0"
+env -i PATH="$(pwd)/../../../opt/cmake-3.30.0-linux-x86_64/bin:/usr/bin" \
+    make -j8 install
 ```
 
-Test whether kAlign is working using:
+Get back to the current directory and test whether kAlign is working using:
 
 ```shell
 opt/kalign-debian-1_3.4.0/bin/kalign --version
