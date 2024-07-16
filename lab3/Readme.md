@@ -2,7 +2,7 @@
 
 Before progression, execute `src/reproduce.sh` and `opt/reproduce.sh` to download all external resources.
 
-## Folders inside this Lab
+## Files in this Directory
 
 - `src`: External source files.
 - `opt`: Built packages.

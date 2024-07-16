@@ -18,11 +18,11 @@ set -x
 
 # Link
 "${CC}" "${LDFLAGS[@]}" --verbose \
-  -shared \
-  -Wl,-rpath="${PWD}" \
-  -Wl,-soname,libstupid.so \
-  -o libstupid.so stupid.o \
-  &>libstupid.so.log
+    -shared \
+    -Wl,-rpath="${PWD}" \
+    -Wl,-soname,libstupid.so \
+    -o libstupid.so stupid.o \
+    &>libstupid.so.log
 "${AR}" rvcs libstupid.a stupid.o &>libstupid.a.log
 "${RANLIB}" libstupid.a &>>libstupid.a.log
 

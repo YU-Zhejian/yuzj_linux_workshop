@@ -1,4 +1,4 @@
-# Stupid C Program
+# Lab 2: Understanding Build Systems
 
 A stupid C program that does almost nothing. Built using diverse building systems.
 
