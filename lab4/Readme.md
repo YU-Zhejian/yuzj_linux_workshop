@@ -1,12 +1,12 @@
 # Lab 4: Build Linux Kernel from Scratch
 
+Version 1.0.
+
 This lab allows you to build a Linux kernel from scratch and run it using PC emulators.
 
 **WARNING**: This lab is tough for those who do not have experience in operating systems.
 
-**NOTE**: The success construction of the Linux kernel largely depends on multiple factors like the version of compilers, the kernel version of the hosting system, and architecture of the host machine, etc. This lab was tested on:
-- Linux Mint 21.3 machine with `11.4.0-1ubuntu1~22.04` GCC and `6.5.0-41-generic` kernel of architecture `x86_64`.
-- Debian Testing with `Debian 13.3.0-1` GCC and `Debian 6.5.6-1` kernel of architecture `x86_64`.
+**NOTE**: The success construction of the Linux kernel largely depends on multiple factors like the version of compilers, the kernel version of the hosting system, and architecture of the host machine, etc.
 
 **NOTE**: This version uses the earliest supporting LTS kernel, 4.19, whose End-Of-Life is at 2024/12. In case of errors, consult documentation [here](https://www.kernel.org/doc/html/v4.19/).
 
@@ -145,7 +145,7 @@ cp busybox.ini src/busybox-1.36.1/.config
 # Also: if you wish to make your own
 # make -j8 -C src/busybox-1.36.1 menuconfig
 
-# Build MUSL
+# Build Bysybox against MUSL
 env -i PATH="/usr/bin" \
     make -j8 -C src/busybox-1.36.1 busybox install \
     CONFIG_PREFIX="$(pwd)/opt/busybox-1.36.1-static" \
@@ -163,8 +163,6 @@ done
 gzip -9f opt/busybox_initramfs.cpio
 ```
 
-Now you may safely shut down the system through `reboot -f`.
-
 ```shell
 qemu-system-x86_64 \
     -m 2048 \
@@ -176,3 +174,12 @@ qemu-system-x86_64 \
     -nographic \
     -no-reboot
 ```
+
+Now you may safely shut down the system through `reboot -f`.
+
+## Host Systems Tested
+
+- Version 1.0 (this version):
+   - Linux Mint 21.3 machine with `11.4.0-1ubuntu1~22.04` GCC and `6.5.0-41-generic` kernel of architecture `x86_64`.
+   - Debian Testing with `Debian 13.3.0-1` GCC and `Debian 6.5.6-1` kernel of architecture `x86_64`.
+   - Ubuntu 20.04 LTS (`focal`) with `Ubuntu 9.4.0-1ubuntu1~20.04.2` GCC and `5.15.0-87-generic #97~20.04.1-Ubuntu` kernel of architecture `x86_64`.
