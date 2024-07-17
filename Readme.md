@@ -22,6 +22,7 @@ Basis:
 - [GNU CoreUtils](https://www.gnu.org/software/coreutils/), which provides `mkdir` `ls` `chmod` `rm`, etc. Those provided by \*BSD and macOS may **NOT** work.
 - [GNU Bourne-Again Shell (Bash)](https://www.gnu.org/software/bash/) for `bash`. Using [Z Shell](https://www.zsh.org/) (zsh) **MAY** work; Using POSIX Bourne Shell, Korn Shell (ksh), or C Shell (csh) will **NOT** work.
 - [GNU DiffUtils](https://www.gnu.org/software/diffutils/) and [GNU Patch](https://www.gnu.org/software/patch/) for `diff` and `patch`.
+- [strace](https://strace.io).
 
 Compiling \& Linking:
 

@@ -3,7 +3,7 @@
 # Install prefix that SHOULD NOT CONTAIN BLANKS
 PREFIX := "$(PWD)/opt"
 CC := gcc
-CFLAGS := -O2 -Wall -Wextra
+CFLAGS := -O2 -Wall -Wextra -DBUILT_UNDER_MAKE_LIBTOOL
 LDFLAGS :=
 
 .PHONY: all

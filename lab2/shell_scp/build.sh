@@ -5,7 +5,7 @@ PWD="$(pwd)"
 [ -n "${CC:-}" ] || CC="$(which gcc)"
 [ -n "${AR:-}" ] || AR="$(which ar)"
 [ -n "${RANLIB:-}" ] || RANLIB="$(which ranlib)"
-[ -n "${CFLAFS:-}" ] || CFLAFS=("-O2" "-Wall" "-Wextra")
+[ -n "${CFLAFS:-}" ] || CFLAFS=("-O2" "-Wall" "-Wextra" "-DBUILT_UNDER_SHELL")
 [ -n "${LDFLAGS:-}" ] || LDFLAGS=("-L${PWD}")
 set -x
 

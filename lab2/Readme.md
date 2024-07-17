@@ -1,11 +1,15 @@
 # Lab 2: Understanding Build Systems
 
-A stupid C program that does almost nothing. Built using diverse building systems.
 
-The program should print:
+## Files in this Directory
 
-```text
-Hello world from the stupid C program.
-```
+- `src`: A stupid C program that does almost nothing. The program should print:
 
-And exit with 0.
+    ```text
+    Hello world from the stupid C program.
+    ```
+
+    And exit with 0.
+- `shell_scp`: Compilation script in pure Shell.
+- `libtool_scp`: Compilation script in GNU Makefile and GNU Libtool.
+- `cmake_scp`: Compilation script in CMake.

@@ -74,6 +74,11 @@ Ver 0.3; Based on 0.2 in 2022 summer program.
    set -ueo pipefail
    [ -f 1.sh ] || touch 1.sh
    ```
+11. What does the following command do?
+
+   ```shell
+   xz -dc < backup.tar.xz | tar tvf - 2>&1 | tee out.log
+   ```
 
 ## Bonus: Small Programs using Bash
 

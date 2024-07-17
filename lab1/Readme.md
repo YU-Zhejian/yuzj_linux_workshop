@@ -2,20 +2,32 @@
 
 ## Learning Objectives
 
+- Understand shell variable and environment variable.
 - Understand different types of shell commands and how to tell one from another.
 - Understand where shell find its external commands.
+- Understand redirections.
 
 ## Preparation
 
-[GNU Bourne-Again Shell (Bash)](https://www.gnu.org/software/bash/), version 5
+1. GNU Bash >= 4.4.
+2. GNU CoreUtils, GNU Grep, GNU Sed, and GNU AWK.
+3. `strace`.
 
-Create a new shell with empty environment:
+In the following part, the term "shell" refers to Bash only. Some commands may not be reproducible in other shells. The following command creates a new shell with empty environment:
 
 ```shell
 env -i bash --noprofile --norc
 ```
 
-## Shell Variables
+Note that `env` is an executable provided by GNU CoreUtils.
+
+## Files in this Directory
+
+Almost nothing!
+
+## Variables
+
+### Shell Variable
 
 Get all shell variables through `set` or `declare`. Sample output:
 
@@ -30,7 +42,7 @@ declare
 # _='echo $A'
 ```
 
-Set shell variable
+Set shell variable through `set` or `declare`:
 
 ```shell
 A=a
@@ -38,21 +50,28 @@ set A=a
 declare A=a
 ```
 
-A Shell variable works in current shell and its subshell.
+Note, no blanks before or after `=`.
+
+```shell
+A = a
+# A: command not found
+```
+
+A Shell variable works in the current shell and its subshell.
 
 ```shell
 echo $A $BASH_SUBSHELL
 # a 0
-(echo $A $BASH_SUBSHELL)
-# a 1
-(eval 'echo $A $BASH_SUBSHELL')
-# a 1
-{ eval 'echo $A $BASH_SUBSHELL'; }
+eval 'echo $A $BASH_SUBSHELL' # Does not create subshells.
 # a 0
-true | eval 'echo $A $BASH_SUBSHELL'
+(echo $A $BASH_SUBSHELL) # Creates a subshell.
+# a 1
+{ eval 'echo $A $BASH_SUBSHELL'; } # Does not create subshells.
+# a 0
+true | eval 'echo $A $BASH_SUBSHELL' # Creates a subshell.
 # a 1
 
-function f(){ echo $B $BASH_SUBSHELL; }
+function f(){ echo $B $BASH_SUBSHELL; } # Does not create subshells.
 B=b
 f
 # b 0
@@ -70,7 +89,7 @@ echo $A
 # 2 0
 ```
 
-It will also **NOT** work in child shell.
+It will also not work in child shell.
 
 ```shell
 A=1
@@ -80,7 +99,52 @@ bash -c 'echo $A'
 # [EMPTY]
 ```
 
-## Environment Variables
+### Basic Operations
+
+Integer operations through `(())`:
+
+```shell
+A=1
+echo $((A+1))
+# 2
+echo $((A+"1"))
+# 2
+B=$((A+"1"))
+echo $B
+# 2
+C=$(("A"+"B"))
+echo $C
+# 3
+C=$(("A+B"))
+echo $C
+# 3
+((A++))
+echo $A
+# 2
+```
+
+Append through substitution.
+
+```shell
+A=a
+A="${A} bbb"
+echo $A
+# a bbb
+```
+
+For other string manipulation, use GNU CoreUtils, Grep, Sed, AWK instead.
+
+### Special shell variables
+
+- `$0`, `$1`, ...: Commandline args.
+- `$@`: Commandline args in an array.
+- `$*`: Commandline args in a string.
+- `$#`: Number of commandline args.
+- `$?`: Exit value of previous command.
+- `$$`: PID of shell.
+- `$!`: PID of last background command.
+
+### Environment Variables
 
 Getting all environment variables:
 
@@ -100,7 +164,39 @@ env
 # _=/usr/bin/env
 ```
 
-Elevation of shell variables.
+Environment variables works in child shells.
+
+```shell
+declare -x A=a
+bash -c 'echo $A'
+# a
+```
+
+However, it cannot be modified in child shells.
+
+```shell
+declare -x A=a
+bash -c 'declare -x A=b'
+echo $A
+# a
+```
+
+Neither can it be modified in subshells.
+
+```shell
+declare -x A=a
+(echo $A; declare -x | grep A)
+#a
+#declare -x A="a"
+(A=b; echo $A; declare -x | grep A); declare -x | grep A
+# b
+# declare -x A="b"
+# declare -x A="a"
+echo $A
+# a
+```
+
+Elevation of shell variables to environment variables can be done using `export` or `declare -x`.
 
 ```shell
 A=a
@@ -121,6 +217,447 @@ echo $A
 bash -c 'echo $A'
 ```
 
+Set environment variables to sub-processes through pre-pend or `env` executable.
+
+```shell
+A=a bash -c 'echo $A'
+# a
+env A=a bash -c 'echo $A'
+# a
+```
+
+## Special Environment Variables
+
+- `SHELL`: Current shell executable. Good to tell bash from zsh.
+- `PWD`: Current working directory.
+- `OLDPWD`: Prebious working directory; where `cd -` goes.
+- `TERM`: Current terminal type.
+- `PATH`: Where shell searches for executables. Separated by `:`.
+- `HOME`: Home directory.
+- `USER`: User name.
+- `TMP`/`TEMP`: Where to place temporary files. Useful if root partition is about to full.
+- `LANG`/`LANGUAGE`/`LC_*`: Language specifications.
+
+Other environment variables used in compilers were introduced in the labs below.
+
+Warning: Depending on environment variables instead of system calls are not wise. For example, use `$(pwd)` instead of `${PWD}`.
+
 ## Commands
 
+A command can be builtin, alias, function, or external executables. Tell them using `type` builtin.
 
+```shell
+type if
+# if is a shell keyword
+type cd
+# cd is a shell builtin
+type ls
+# ls is /usr/bin/ls
+alias ls="ls -lFh"
+type ls
+# ls is aliased to `ls -lFh'
+function fn() { return 0; }
+type fn
+# fn is a function
+# fn ()
+# {
+#     return 0
+# }
+```
+
+Use `type -a` to see resolution order. For example,
+
+```shell
+function echo() { return 0; }
+alias echo="echo -E"
+type -a echo
+# echo is aliased to `echo -E'
+# echo is a function
+# echo ()
+# {
+#     return 0
+# }
+# echo is a shell builtin
+# echo is /usr/bin/echo
+# echo is /bin/echo
+```
+
+If some name is either builtin or external (e.g., `kill`), we can force shell to use its external version through:
+
+```shell
+# An example of builtin kill
+kill --version
+# bash: kill: -version: invalid signal specification
+
+"$(type -P kill)" --version
+# kill from procps-ng 4.0.4
+"$(which kill)" --version
+# kill from procps-ng 4.0.4
+env kill --version
+# kill from procps-ng 4.0.4
+```
+
+Note that `which` is provided by GNU CoreUtils.
+
+## Shell Invocation: Login Shell, Interactive Shell and Shell Startup Files
+
+Observe files read for login interactive shell:
+
+```shell
+echo exit | \
+    strace -e trace='openat' -e signal=none env -i bash -li 2>&1 1>/dev/null | \
+    cut -d '"' -f 2 | \
+    grep '^/' | \
+    grep -Ev "locale/|langpack|^/dev|/$|.*so.*"
+```
+
+```text
+/usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache
+/etc/nsswitch.conf
+/etc/passwd
+/usr/share/terminfo/d/dumb
+/etc/profile
+/etc/bash.bashrc
+/etc/profile.d/01-locale-fix.sh
+/etc/profile.d/Z97-byobu.sh
+/etc/profile.d/Z99-cloud-locale-test.sh
+/etc/profile.d/Z99-cloudinit-warnings.sh
+/etc/profile.d/bash_completion.sh
+/usr/share/bash-completion/bash_completion
+/etc/bash_completion.d/000_bash_completion_compat.bash
+/etc/bash_completion.d/git-prompt
+/usr/lib/git-core/git-sh-prompt
+/etc/bash_completion.d/global-python-argcomplete
+/usr/lib/python3/dist-packages/argcomplete/bash_completion.d/_python-argcomplete
+/etc/profile.d/cedilla-portuguese.sh
+/etc/profile.d/debuginfod.sh
+/etc/profile.d/gawk.sh
+/etc/profile.d/update-motd.sh
+/home/yuzj/.bash_profile
+/home/yuzj/.bash_login
+/home/yuzj/.profile
+/home/yuzj/.bash_history
+/home/yuzj/.bash_history
+/home/yuzj/.inputrc
+/etc/inputrc
+/home/yuzj/.bash_logout
+/etc/bash.bash_logout
+/home/yuzj/.bash_history
+/home/yuzj/.bash_history
+/home/yuzj/.bash_history-01447.tmp
+```
+
+Observe files read for non-login interactive shell:
+
+```shell
+echo exit | \
+    strace -e trace='openat' -e signal=none env -i bash -i 2>&1 1>/dev/null | \
+    cut -d '"' -f 2 | \
+    grep '^/' | \
+    grep -Ev "locale/|langpack|^/dev|/$|.*so.*"
+```
+
+```text
+/usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache
+/etc/nsswitch.conf
+/etc/passwd
+/usr/share/terminfo/d/dumb
+/etc/bash.bashrc
+/home/yuzj/.bashrc
+/home/yuzj/.bash_history
+/usr/share/bash-completion/bash_completion
+/etc/bash_completion.d/000_bash_completion_compat.bash
+/etc/bash_completion.d/git-prompt
+/usr/lib/git-core/git-sh-prompt
+/etc/bash_completion.d/global-python-argcomplete
+/usr/lib/python3/dist-packages/argcomplete/bash_completion.d/_python-argcomplete
+/home/yuzj/miniforge3/etc/profile.d/mamba.sh
+/home/yuzj/.bash_history
+/home/yuzj/.bash_history
+/home/yuzj/.inputrc
+/etc/inputrc
+```
+
+Observe files read for non-login interactive shell:
+
+```shell
+echo exit | \
+    strace -e trace='openat' -e signal=none env -i bash 2>&1 1>/dev/null | \
+    cut -d '"' -f 2 | \
+    grep '^/' | \
+    grep -Ev "locale/|langpack|^/dev|/$|.*so.*"
+```
+
+```text
+/usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache
+/etc/nsswitch.conf
+/etc/passwd
+```
+
+Alias expansion is turned off for non-interactive shell.
+
+```shell
+env -i bash << EOF
+shopt expand_aliases
+alias ls='ls -lFh'
+type -a ls
+exit
+EOF
+# expand_aliases  off
+# ls is /usr/bin/ls
+# ls is /bin/ls
+
+env -i bash -i << EOF
+shopt expand_aliases
+alias ls='ls -lFh'
+type -a ls
+exit
+EOF
+# yuzj@DESKTOP-FHVJD55:/mnt/f/home/Documents/yuzj_linux_workshop$ shopt expand_aliases
+# expand_aliases  on
+# yuzj@DESKTOP-FHVJD55:/mnt/f/home/Documents/yuzj_linux_workshop$ alias ls='ls -lFh'
+# yuzj@DESKTOP-FHVJD55:/mnt/f/home/Documents/yuzj_linux_workshop$ type -a ls
+# ls is aliased to `ls -lFh'
+# ls is /usr/bin/ls
+# ls is /bin/ls
+# yuzj@DESKTOP-FHVJD55:/mnt/f/home/Documents/yuzj_linux_workshop$ exit
+# exit
+```
+
+## Redirections
+
+- Once a process is started, three "pipes" will be connected to it. Namely:
+  - Standard input (`stdin`) for file descriptor `0` and device `/dev/stdin`.
+  - Standard output (`stdout`) for file descriptor `1` and device `/dev/stdout`.
+  - Standard error (`stderr`) for file descriptor `2` and device `/dev/stderr`.
+- If there are no redirections, all three "pipes" are connected to your current **terminal**. That is, keyboard as `stdin`, screen as `stdout` and `stderr`.
+- Some special files:
+  - `/dev/null` is a "black hole" file. Anything appended will disappear.
+  - `/dev/random` generates pseudo-random numbers.
+  - `/dev/zero` generates `\0`s.
+
+### Pipes (`|`)
+
+Syntax: `prog1 | prog2`
+
+Use `stdout` of `prog1` as `stdin` of `prog2`.
+
+Example:
+
+```shell
+cat /etc/passwd | wc -l
+# 38
+```
+
+### Less than (`<`)
+
+Syntax: `prog1 < file1`
+
+Use `file1` as `stdin` of `prog1`.
+
+Example:
+
+```shell
+wc -l < /etc/passwd
+# 38
+```
+
+Syntax:
+
+```shell
+prog1 << EOF
+Contents
+EOF
+```
+
+Read from next line to `EOF` as `stdin` of `prog1`.
+
+Example:
+
+```shell
+base64 -d << EOF
+SW4gdGhlIGJlZ2lubmluZyBHb2QgY
+3JlYXRlZCB0aGUgaGVhdmVuIGFuZC
+B0aGUgZWFydGguCg==
+EOF
+# In the beginning God created the heaven and the earth.
+```
+
+The above command is how we store binary files inside a shell script file.
+
+### Greater than (`>`)
+
+Syntax: `prog1 n> file1`
+
+Write file descriptor `n` of `prog1` to `file1`.
+
+`n` can be omitted if `n=1`.
+
+Syntax: `prog1 n>> file1`
+
+Append (Add to bottom) file descriptor `n` of `prog1` to `file1`.
+
+Example:
+
+```shell
+env ls -1 /etc > etc.txt
+wc -l etc.txt
+# 243 etc.txt
+
+env ls -1 /etc > etc.txt
+wc -l etc.txt
+# 243 etc.txt
+
+env ls -1 /etc >> etc.txt
+wc -l etc.txt
+# 486 etc.txt
+
+strace ls 2> /dev/null
+# Readme.md  etc.txt
+strace ls > /dev/null
+# execve("/usr/bin/ls", ["ls"], 0x7ffec82578c0 /* 31 vars */) = 0
+# brk(NULL)                               = 0x5619714e3000
+# exit_group(0)                           = ?
+# [...]
+# +++ exited with 0 +++
+```
+
+### Process Substitution (`<()` `>()`)
+
+Syntax: `prog1 <(prog2)` to use `stdout` for `prog2` as a **file** in commandline that invokes `prog1`.
+
+Syntax: `prog1 >(prog2)` to use `stdin` for `prog2` as a **file** in commandline that invokes `prog1`.
+
+Example:
+
+```shell
+wc -l <(ls /etc)
+# 243 /dev/fd/63
+
+tar cf >(wc -c) .
+# 20480
+```
+
+### First-In-First-Out (FIFO) Files
+
+FIFOs are special files that can be used as a pipe. It can be created by command `mkfifo`.
+
+Usage: `prog1 > fifo1` with `prog2 < fifo1` equals `prog1 | prog2`.
+
+Example:
+
+```shell
+mkfifo fifo1 # May not work on certain file systems
+find 2> /dev/null | tee fifo1 &
+cat fifo1 | xz –c - > find.xz
+rm -f fifo1
+```
+
+### Tips
+
+- Redirect both to a file: `prog1 &> file1`
+- Redirect both to different files: `prog1 > file1 2> file2`
+- `cat`: To redirect `stdin` as `stdout`.
+- `cat files`: To redirect contents of all file in `files` to `stdout`.
+- `tee files`: To redirect `stdin` to all file in `files` and `stdout`.
+- `more`, `less` and `most`: Veiw long contents in `stdin` with paging.
+
+Example:
+
+```shell
+find /root 2>&1 | wc -l
+# 2
+find /root | wc -l
+# find: ‘/root’: Permission denied
+# 1
+```
+
+Some programs use `–` to represent `stdin`.
+
+```shell
+echo "In the beginning..." | sha1sum -
+# 399203358dee31c80a1769a3c501901321bc08ed  -
+echo "In the beginning..." | sha1sum /dev/stdin
+# 399203358dee31c80a1769a3c501901321bc08ed  /dev/stdin
+echo "In the beginning..." | sha1sum
+399203358dee31c80a1769a3c501901321bc08ed  -
+```
+
+Some redirections create subshells. For example, process substitution creates subshells.
+
+```shell
+echo $BASH_SUBSHELL
+# 0
+eval 'echo OUTER $BASH_SUBSHELL' <(eval 'echo INNER $BASH_SUBSHELL >&2')
+# OUTER 0 /dev/fd/63
+# INNER 1
+```
+
+Pipe creates subshells.
+
+```shell
+true | eval 'echo $BASH_SUBSHELL'
+# 1
+true | false; echo $?
+# 1
+false | true; echo $?
+# 0
+
+env -i bash --norc --noprofile << EOF
+set -ue
+find /root 2>/dev/null | wc -l > /dev/null
+echo "I am still alive!"
+EOF
+# I am still alive!
+```
+
+Shell option `pipefail` allows failure of the entire command if one of the components failed.
+
+```shell
+env -i bash --norc --noprofile << EOF
+set -ueo pipefail
+find /root 2>/dev/null | wc -l > /dev/null
+EOF
+# [EMPTY]
+```
+
+However, beware of commands thay may raise broken pipe exception:
+
+```shell
+env -i bash --norc --noprofile << EOF
+set -ueo pipefail
+head -n 1 /etc/passwd | wc -l > /dev/null
+echo "I am still alive!"
+EOF
+# I am still alive!
+
+env -i bash --norc --noprofile << EOF
+set -ueo pipefail
+head -n 1 < /etc/passwd | wc -l > /dev/null
+echo "I am still alive!"
+EOF
+# I am still alive!
+
+env -i bash --norc --noprofile << EOF
+set -ueo pipefail
+yes | head -n 1 | wc -l > /dev/null
+echo "I am still alive!"
+EOF
+# [EMPTY]
+```
+
+## Shell Software Engineering
+
+Secure shell script:
+
+- Add `set -ue` before execution of commands allows shell to fail on undefined variables and errors.
+- However, be cautious with `set -o pipefail` since broken pipe is really common.
+- Also, there are scripts that depend on default values of undefined shell variables (e.g., Conda initialization script). Remember to turn `set -ue` off before evaluating those scripts.
+- Do not use `eval`.
+- Read from `tty` instead of `stdin` for passwords. For example, `read -s PASSWD < /dev/tty; echo $PASSWD`.
+- Add shebang line (e.g., `#!/usr/bin/env bash` or `#!/bin/bash`) for the correct shell.
+- Use LF instead of CRLF for shell scripts.
+
+## Afterwords
+
+Finish quiz 1.

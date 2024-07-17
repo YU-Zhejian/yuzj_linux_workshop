@@ -1,9 +1,10 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.12)
 project(
     stupid_c_progs
     VERSION 0.1
     LANGUAGES C)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+add_compile_definitions(BUILT_UNDER_CMAKE)
 
 macro(ceu_cm_set_static_target name)
     set_target_properties("${name}" PROPERTIES LINK_SEARCH_START_STATIC 1)
