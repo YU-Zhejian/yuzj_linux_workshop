@@ -13,7 +13,7 @@
 [    0.000000] tsc: Fast TSC calibration using PIT
 [    0.000000] tsc: Detected 2918.178 MHz processor
 [    0.004099] last_pfn = 0x7ffe0 max_arch_pfn = 0x400000000
-[    0.004875] x86/PAT: Configuration [0-7]: WB  WC  UC- UC  WB  WP  UC- WT  
+[    0.004875] x86/PAT: Configuration [0-7]: WB  WC  UC- UC  WB  WP  UC- WT
 [    0.011440] found SMP MP-table at [mem 0x000f5ba0-0x000f5baf]
 [    0.012237] Scanning 1 areas for low memory corruption
 [    0.014990] No NUMA configuration found
@@ -31,7 +31,7 @@
 [    0.018451] Initmem setup node 0 [mem 0x0000000000001000-0x000000007ffdffff]
 [    0.046591] Intel MultiProcessor Specification v1.4
 [    0.046667] MPTABLE: OEM ID: BOCHSCPU
-[    0.046680] MPTABLE: Product ID: 0.1         
+[    0.046680] MPTABLE: Product ID: 0.1
 [    0.046688] MPTABLE: APIC at: 0xFEE00000
 [    0.046826] Processor #0 (Bootup-CPU)
 [    0.047221] IOAPIC[0]: apic_id 0, version 32, address 0xfec00000, GSI 0-23
@@ -94,7 +94,6 @@
 [    1.026498] Scanning for low memory corruption every 60 seconds
 [    1.044745] Initialise system trusted keyrings
 [    1.049796] workingset: timestamp_bits=56 max_order=19 bucket_order=0
-[    1.115522] squashfs: version 4.0 (2009/01/31) Phillip Lougher
 [    1.141737] Key type asymmetric registered
 [    1.142381] Asymmetric key parser 'x509' registered
 [    1.143663] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 253)
@@ -120,37 +119,37 @@
 [    1.666584] Loading compiled-in X.509 certificates
 [    1.694267] VFS: Cannot open root device "(null)" or unknown-block(0,0): error -6
 [    1.694783] Please append a correct "root=" boot option; here are the available partitions:
-[    1.695934] 0100            4096 ram0 
+[    1.695934] 0100            4096 ram0
 [    1.695950]  (driver?)
-[    1.696466] 0101            4096 ram1 
+[    1.696466] 0101            4096 ram1
 [    1.696468]  (driver?)
-[    1.696794] 0102            4096 ram2 
+[    1.696794] 0102            4096 ram2
 [    1.696795]  (driver?)
-[    1.697247] 0103            4096 ram3 
+[    1.697247] 0103            4096 ram3
 [    1.697248]  (driver?)
-[    1.697637] 0104            4096 ram4 
+[    1.697637] 0104            4096 ram4
 [    1.697638]  (driver?)
-[    1.698090] 0105            4096 ram5 
+[    1.698090] 0105            4096 ram5
 [    1.698091]  (driver?)
-[    1.698479] 0106            4096 ram6 
+[    1.698479] 0106            4096 ram6
 [    1.698480]  (driver?)
-[    1.698916] 0107            4096 ram7 
+[    1.698916] 0107            4096 ram7
 [    1.698926]  (driver?)
-[    1.699439] 0108            4096 ram8 
+[    1.699439] 0108            4096 ram8
 [    1.699441]  (driver?)
-[    1.699827] 0109            4096 ram9 
+[    1.699827] 0109            4096 ram9
 [    1.699828]  (driver?)
-[    1.700295] 010a            4096 ram10 
+[    1.700295] 010a            4096 ram10
 [    1.700296]  (driver?)
-[    1.700687] 010b            4096 ram11 
+[    1.700687] 010b            4096 ram11
 [    1.700688]  (driver?)
-[    1.701134] 010c            4096 ram12 
+[    1.701134] 010c            4096 ram12
 [    1.701136]  (driver?)
-[    1.701521] 010d            4096 ram13 
+[    1.701521] 010d            4096 ram13
 [    1.701522]  (driver?)
-[    1.702033] 010e            4096 ram14 
+[    1.702033] 010e            4096 ram14
 [    1.702034]  (driver?)
-[    1.702423] 010f            4096 ram15 
+[    1.702423] 010f            4096 ram15
 [    1.702424]  (driver?)
 [    1.703145] Kernel panic - not syncing: VFS: Unable to mount root fs on unknown-block(0,0)
 [    1.704253] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 4.19.317 #1

@@ -5,7 +5,7 @@ PWD="$(pwd)"
 [ -n "${CC:-}" ] || CC="$(which gcc)"
 [ -n "${AR:-}" ] || AR="$(which ar)"
 [ -n "${RANLIB:-}" ] || RANLIB="$(which ranlib)"
-[ -n "${CFLAFS:-}" ] || CFLAFS=("-O2" "-Wall" "-Wextra" "-DBUILT_UNDER_SHELL")
+[ -n "${CFLAFS:-}" ] || CFLAFS=("-O2" "-Wall" "-Wextra" "-DBUILT_UNDER_SHELL" "-fPIC" "-fPIE")
 [ -n "${LDFLAGS:-}" ] || LDFLAGS=("-L${PWD}")
 set -x
 
@@ -17,14 +17,14 @@ set -x
 "${CC}" "${CFLAFS[@]}" --verbose -c -o stupid.o ../src/stupid.c &>stupid.o.log
 
 # Link
+"${AR}" rvcs libstupid.a stupid.o &>libstupid.a.log
+"${RANLIB}" libstupid.a &>>libstupid.a.log
 "${CC}" "${LDFLAGS[@]}" --verbose \
     -shared \
     -Wl,-rpath="${PWD}" \
     -Wl,-soname,libstupid.so \
     -o libstupid.so stupid.o \
     &>libstupid.so.log
-"${AR}" rvcs libstupid.a stupid.o &>libstupid.a.log
-"${RANLIB}" libstupid.a &>>libstupid.a.log
 
 "${CC}" "${LDFLAGS[@]}" --verbose -o main main.o -lstupid &>main.log
 "${CC}" "${LDFLAGS[@]}" --verbose -static -static-libgcc -o main_static main.o -lstupid &>main_static.log

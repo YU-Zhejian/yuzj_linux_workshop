@@ -4,7 +4,7 @@
 
 - Understand shell variable and environment variable.
 - Understand different types of shell commands and how to tell one from another.
-- Understand where shell find its external commands.
+- Understand where a shell find its external commands.
 - Understand redirections.
 
 ## Preparation
@@ -23,7 +23,7 @@ Note that `env` is an executable provided by GNU CoreUtils.
 
 ## Files in this Directory
 
-Almost nothing!
+- `quiz1.md`: The quiz.
 
 ## Variables
 
@@ -42,7 +42,7 @@ declare
 # _='echo $A'
 ```
 
-Set shell variable through `set` or `declare`:
+Set shell variable through `set` or `declare`. All following commands are equivalent:
 
 ```shell
 A=a
@@ -226,7 +226,7 @@ env A=a bash -c 'echo $A'
 # a
 ```
 
-## Special Environment Variables
+### Special Environment Variables
 
 - `SHELL`: Current shell executable. Good to tell bash from zsh.
 - `PWD`: Current working directory.
@@ -423,18 +423,17 @@ EOF
 # yuzj@DESKTOP-FHVJD55:/mnt/f/home/Documents/yuzj_linux_workshop$ exit
 # exit
 ```
-
 ## Redirections
 
 - Once a process is started, three "pipes" will be connected to it. Namely:
-  - Standard input (`stdin`) for file descriptor `0` and device `/dev/stdin`.
-  - Standard output (`stdout`) for file descriptor `1` and device `/dev/stdout`.
-  - Standard error (`stderr`) for file descriptor `2` and device `/dev/stderr`.
+    - Standard input (`stdin`) for file descriptor `0` and device `/dev/stdin`.
+    - Standard output (`stdout`) for file descriptor `1` and device `/dev/stdout`.
+    - Standard error (`stderr`) for file descriptor `2` and device `/dev/stderr`.
 - If there are no redirections, all three "pipes" are connected to your current **terminal**. That is, keyboard as `stdin`, screen as `stdout` and `stderr`.
 - Some special files:
-  - `/dev/null` is a "black hole" file. Anything appended will disappear.
-  - `/dev/random` generates pseudo-random numbers.
-  - `/dev/zero` generates `\0`s.
+    - `/dev/null` is a "black hole" file. Anything appended will disappear.
+    - `/dev/random` generates pseudo-random numbers.
+    - `/dev/zero` generates `\0`s.
 
 ### Pipes (`|`)
 
@@ -646,6 +645,62 @@ EOF
 # [EMPTY]
 ```
 
+## Miscellaneous
+
+### Expand to stdout of sub-process: `$()`
+
+Syntax: `$(prog)`
+
+Example:
+
+```shell
+echo $(pwd)
+# /home/yuzj/Documents/yuzj_linux_workshop/lab2/01_shell_scp
+echo `pwd` # Obsolete form, not recommended.
+# /home/yuzj/Documents/yuzj_linux_workshop/lab2/01_shell_scp
+```
+
+### Expand to Numbers: `{start..end}`
+
+Example:
+
+```shell
+echo {1..5}
+# 1 2 3 4 5
+echo {001..005}
+# 001 002 003 004 005
+```
+
+### Wildcard matching: Glob
+
+Example:
+
+```shell
+# ? match one character
+echo /bin/?z
+# /bin/7z /bin/lz /bin/uz /bin/xz
+
+# * match any character
+echo /bin/*z
+# /bin/7z /bin/compiz /bin/gts2xyz /bin/lz /bin/pigz /bin/ppmtopuzz /bin/tgz /bin/unpigz /bin/unxz /bin/uz /bin/xz
+```
+
+Other patterns may cause confusion, so not introduced.
+
+### `test` keyword
+
+`test expr` and `[expr]` are equivalent.
+
+```shell
+test 1 -lt 2; echo $?
+# 0
+
+[ 1 -lt 2 ]; echo $?
+# 0
+```
+
+`[[expr]]` provides more powerful features.
+
 ## Shell Software Engineering
 
 Secure shell script:
@@ -657,6 +712,31 @@ Secure shell script:
 - Read from `tty` instead of `stdin` for passwords. For example, `read -s PASSWD < /dev/tty; echo $PASSWD`.
 - Add shebang line (e.g., `#!/usr/bin/env bash` or `#!/bin/bash`) for the correct shell.
 - Use LF instead of CRLF for shell scripts.
+
+- While reading a file, instead of:
+  ```shell
+  cat /etc/passwd | while read -r line; do
+      echo $line
+  done
+  ```
+
+  Use:
+
+  ```shell
+  while read -r line; do
+      echo $line
+  done < /etc/passwd
+  ```
+
+  Or:
+
+  ```shell
+  while read -r line; do
+      echo $line
+  done < <(cat /etc/passwd)
+  ```
+
+  To prevent opening of subshells.
 
 ## Afterwords
 

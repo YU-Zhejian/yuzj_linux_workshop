@@ -1,15 +1,26 @@
 # Lab 2: Understanding Build Systems
 
+## Learning Objectives
+
+- Understand the compiling process: Pre-processing, compile, assemble, link and load.
+- Understand what a build system is and why it is important.
+- Build software that uses representative build systems: GNU AutoTools and CMake.
+
+## Preparation
+
+1. GNU Bash >= 4.4.
+2. GNU CoreUtils, GNU Grep, GNU Sed, and GNU AWK.
+3. A valid C compiler. Both GCC and Clang will work.
+4. GNU BinUtils.
+5. GNU Make, GNU AutoConf, GNU AutoMake, GNU LibTool.
+6. CMake.
 
 ## Files in this Directory
 
-- `src`: A stupid C program that does almost nothing. The program should print:
+- `src`: The source code.
+- `01_shell_scp`: Compilation script in pure Shell.
+- `02_libtool_scp`: Compilation script in GNU Makefile and GNU Libtool.
+- `03_autotools_scp`: Compilation script in GNU AutoTools.
+- `04_cmake_scp`: Compilation script in CMake.
 
-    ```text
-    Hello world from the stupid C program.
-    ```
-
-    And exit with 0.
-- `shell_scp`: Compilation script in pure Shell.
-- `libtool_scp`: Compilation script in GNU Makefile and GNU Libtool.
-- `cmake_scp`: Compilation script in CMake.
+Now let's pace into `src` and get see what we will build.

@@ -4,13 +4,13 @@ Version 1.0.
 
 This lab allows you to build a Linux kernel from scratch and run it using PC emulators.
 
-**WARNING**: This lab is tough for those who do not have experience in operating systems.
+**WARNING**: This lab will be extremely tough for those who do not have sufficient experience in operating systems.
 
 **NOTE**: The success construction of the Linux kernel largely depends on multiple factors like the version of compilers, the kernel version of the hosting system, and architecture of the host machine, etc.
 
 **NOTE**: This version uses the earliest supporting LTS kernel, 4.19, whose End-Of-Life is at 2024/12. In case of errors, consult documentation [here](https://www.kernel.org/doc/html/v4.19/).
 
-**Also see**: The [Linux from Scratch](https://www.linuxfromscratch.org/) (LFS) Project.
+**Also see**: The [Linux from Scratch](https://www.linuxfromscratch.org/) (LFS) Project, which provides extensive documentations on how to build a working Linux distribution from scratch.
 
 ## Learning Objectives
 
@@ -24,13 +24,17 @@ This lab allows you to build a Linux kernel from scratch and run it using PC emu
 - `busybox.ini`: Configuration file for building static BusyBox.
 - `hello.c`: A hello world program in C.
 - `logs`: Kernel logs from QEMU.
-- `busybox_initramfs`: File system tree for BusyBox initramfs.
+- `busybox_initramfs`: File system tree for BusyBox initramfs. Where:
+  - `init`: Script for `init` process.
+  - `etc/fstab`: Filesystem mounts.
 - `src`: External source files.
 - `opt`: Installation path of various packages.
 
-## Dependencies
+## Preparation
 
-Get files using `src/reproduce.sh`. For building the kernel, see [this](https://www.kernel.org/doc/html/v4.19/process/changes.html#minimal-requirements-to-compile-the-kernel). For running the generated kernel and initramfs using virtual machine, install [QEMU](https://www.qemu.org) and [GNU cpio](https://www.gnu.org/software/cpio/).
+- Get files using `src/reproduce.sh`.
+- For building the kernel, see [Minimal requirements to compile the Kernel](https://www.kernel.org/doc/html/v4.19/process/changes.html#minimal-requirements-to-compile-the-kernel).
+- For running the generated kernel and initramfs using virtual machine, install [QEMU](https://www.qemu.org) and [GNU cpio](https://www.gnu.org/software/cpio/).
 
 ## Configure the Linux Kernel
 
@@ -40,7 +44,7 @@ The Linux kernel is bundled with diverse drivers that are not needed for this sm
 cp linux.ini src/linux-4.19.317/.config
 ```
 
-This configuration is based on the configuration generated using `make -j8 -C src/linux-4.19.317 x86_64_defconfig` by removing network, graphics and sound related drivers, with the addition of [SquashFS](http://www.squashfs.org/) driver (although not used).
+This configuration is based on the default configuration (see below) and customized by removing network, graphics and sound related drivers.
 
 If you prefer to configure your own kernel, first generate a default configuration using:
 
@@ -48,7 +52,7 @@ If you prefer to configure your own kernel, first generate a default configurati
 make -j8 -C src/linux-4.19.317 x86_64_defconfig
 ```
 
-Then customize in a terminal user interface with:
+Then customize in a terminal user interface (TUI) with:
 
 ```shell
 make -j8 -C src/linux-4.19.317 menuconfig
@@ -67,7 +71,7 @@ env -i PATH="/usr/bin"  \
     INSTALL_HDR_PATH="$(pwd)/opt/linux_headers"
 ```
 
-Now the Linux kernel boot image will be available at `src/linux-4.19.317/arch/x86/boot/bzImage` and could be booted via QEMU. Try:
+Now the Linux kernel boot image will be available at `src/linux-4.19.317/arch/x86/boot/bzImage` with its headers installed to `opt/linux_headers`. The kernel could be booted via QEMU. Try:
 
 ```shell
 qemu-system-x86_64 \
@@ -83,19 +87,19 @@ The kernel will boot and panic since no root filesystem was specified. See `logs
 
 ## Building a Small C Library on the Kernel
 
-Almost all applications would work a C library (`libc`), so building such is important. For simplicity and size, we choose [Musl](https://musl.libc.org/) as our C library. Enter `src/musl-1.2.5`, and run:
+Almost all applications would work a C library (`libc`), so building such is important. For simplicity and size, we choose [Musl](https://musl.libc.org/) as our C library. Run:
 
 ```shell
-env -i PATH="/usr/bin" \
-    ./configure  --prefix="$(pwd)/../../opt/musl-1.2.5"
-env -i PATH="/usr/bin" make -j8 install
+env -C src/musl-1.2.5 -i PATH="/usr/bin" \
+    ./configure  --prefix="$(pwd)/opt/musl-1.2.5"
+env -C src/musl-1.2.5 -i PATH="/usr/bin" make -j8 install
 ```
 
 and a Musl C library together with its development tools and headers will be installed to `opt/musl-1.2.5`.
 
 ## The Hello World Initial RAM Filesystem (initramfs)
 
-An initial RAM filesystem is a Linux filesystem that exists as a memory image and is supported by QEMU. We will use it as our root filesystem. Consult [here](https://www.kernel.org/doc/html/v4.19/admin-guide/initrd.html) for a more detailed introduction.
+An initial RAM filesystem is a Linux filesystem that exists as a memory image and is supported by QEMU. We will use it as our root filesystem. Consult [here](https://www.kernel.org/doc/html/v4.19/admin-guide/initrd.html) for a more detailed introduction. To get started, we will try to build an initramfs that prints hello world and then reboot the system.
 
 Now we will compile a static hello world program against the installed Musl C library.
 
@@ -128,10 +132,13 @@ qemu-system-x86_64 \
     -kernel ./src/linux-4.19.317/arch/x86_64/boot/bzImage \
     -initrd opt/hello_world_initramfs.cpio.gz \
     -append "nokaslr console=tty0 console=ttyS0,115200 root=/dev/ram rdinit=/init rootfstype=ramfs" \
-    -nographic
+    -nographic \
+    -no-reboot
 ```
 
-The init process successfully printed "Hello world!" and exit, which results in kernel panic. See `logs/kernel.2.log` for details.
+The additional `-no-reboot` parameter will force QEMU to exit when a reboot is issues. The init process successfully printed "Hello world!" and exit, which results in kernel panic. See `logs/kernel.2.log` for details.
+
+If you do not add `reboot` at the end of your C program, the kernel will go panic (for `init` being killed). See `logs/kernel.2_fail.log`.
 
 ## The BusyBox initramfs
 
@@ -175,11 +182,11 @@ qemu-system-x86_64 \
     -no-reboot
 ```
 
-Now you may safely shut down the system through `reboot -f`.
+Now you may safely shut down the system through `reboot -f`. Have fun on your new virtualized system!
 
 ## Host Systems Tested
 
 - Version 1.0 (this version):
    - Linux Mint 21.3 machine with `11.4.0-1ubuntu1~22.04` GCC and `6.5.0-41-generic` kernel of architecture `x86_64`.
-   - Debian Testing with `Debian 13.3.0-1` GCC and `Debian 6.5.6-1` kernel of architecture `x86_64`.
+   - Debian 13 Testing (`trixie`)  with `Debian 13.3.0-1` GCC and `Debian 6.5.6-1` kernel of architecture `x86_64`.
    - Ubuntu 20.04 LTS (`focal`) with `Ubuntu 9.4.0-1ubuntu1~20.04.2` GCC and `5.15.0-87-generic #97~20.04.1-Ubuntu` kernel of architecture `x86_64`.

@@ -1,30 +1,9 @@
-[    1.175661] Loading compiled-in X.509 certificates
-[    1.206657] Freeing unused kernel image memory: 912K
-[    1.208440] Write protecting the kernel read-only data: 12288k
-[    1.210048] Freeing unused kernel image memory: 2024K
-[    1.210636] Freeing unused kernel image memory: 888K
-[    1.210792] Run /init as init process
+[    1.105979] Loading compiled-in X.509 certificates
+[    1.138167] Freeing unused kernel image memory: 884K
+[    1.140542] Write protecting the kernel read-only data: 10240k
+[    1.142202] Freeing unused kernel image memory: 2024K
+[    1.142827] Freeing unused kernel image memory: 976K
+[    1.142979] Run /init as init process
 Hello world!
-[    1.226299] Kernel panic - not syncing: Attempted to kill init! exitcode=0x00000000
-[    1.226299] 
-[    1.226673] CPU: 0 PID: 1 Comm: init Not tainted 4.19.317 #1
-[    1.226771] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1 04/01/2014
-[    1.226945] Call Trace:
-[    1.227784]  dump_stack+0x50/0x63
-[    1.227873]  panic+0xef/0x23d
-[    1.227930]  do_exit.cold+0x14/0xb2
-[    1.227991]  do_group_exit+0x2e/0xa0
-[    1.228054]  __x64_sys_exit_group+0xf/0x10
-[    1.228125]  do_syscall_64+0x5b/0x2b0
-[    1.228190]  entry_SYSCALL_64_after_hwframe+0x5c/0xc1
-[    1.228468] RIP: 0033:0x401755
-[    1.228671] Code: 8b 05 07 2f 00 00 48 8b 35 f0 2e 00 00 48 8b 15 01 2f 00 00 e9 f7 fe ff ff f4 eb e1 f3 0f 1e fa 48 63 ff b8 e7 00 00 00 0f 05 <0
-[    1.228983] RSP: 002b:00007ffe58097498 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
-[    1.229138] RAX: ffffffffffffffda RBX: 0000000000401129 RCX: 0000000000401755
-[    1.229251] RDX: 0000000000404608 RSI: 0000000000000000 RDI: 0000000000000000
-[    1.229364] RBP: 0000000000000000 R08: 0000000000404040 R09: 00007ffe5809745f
-[    1.229469] R10: 0000000000000001 R11: 0000000000000246 R12: 00007ffe580974e8
-[    1.229567] R13: 00007ffe580974f8 R14: 0000000000000000 R15: 0000000000000000
-[    1.230055] Kernel Offset: disabled
-[    1.230279] ---[ end Kernel panic - not syncing: Attempted to kill init! exitcode=0x00000000
-[    1.230279]  ]---
+[    1.161456] reboot: Restarting system
+[    1.161565] reboot: machine restart

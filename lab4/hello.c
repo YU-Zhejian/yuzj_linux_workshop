@@ -1,7 +1,10 @@
 #include <stdio.h>
+#include <sys/reboot.h>
+#include <unistd.h>
 
 int main()
 {
     printf("Hello world!\n");
-    return 0;
+    sync(); // Synchronize the disks
+    return reboot(RB_AUTOBOOT);
 }
