@@ -1,6 +1,8 @@
 # Compiling Stupid C Program using Plain Shell Script
 
-Create a new clean shell, and do as follows:
+Compilation of source codes can of course done by shell scripts. Following is the step-to-step guide of the compilation, linking and loading process. For all-in-one script, see `build.sh`.
+
+Create a new clean shell, and follow the guide:
 
 ## Set Required Variables
 
@@ -12,20 +14,23 @@ PWD="$(pwd)"
 [ -n "${AR:-}" ] || AR="$(which ar)"
 # RANLIB: Path to index generator for static libraries. Will use ranlib (GNU BinUtils) or llvm-ranlib (LLVM).
 [ -n "${RANLIB:-}" ] || RANLIB="$(which ranlib)"
+
 # Default C compiler arguments.
 [ -n "${CFLAFS:-}" ] || CFLAFS=("-O2" "-Wall" "-Wextra" "-DBUILT_UNDER_SHELL" "-fPIC" "-fPIE")
 # Default linker flags
 [ -n "${LDFLAGS:-}" ] || LDFLAGS=("-L${PWD}")
 ```
 
-Explaination of used C compiler flags:
+Explanation of used C compiler flags:
 
-- `-O2`: Optimize for speed, level 2,
-- `-Wall`: Generate all warnings.
-- `-Wextra`: Generate extra warnings.
+- `-O2`: Optimize for speed, level 2. This allows generation of applications that runs faster. Compielrs are usually smarter than you.
+- `-Wall`: Generate all warnings. Useful for development.
+- `-Wextra`: Generate extra warnings. Useful for development.
 - `-DBUILT_UNDER_SHELL`: Define `BUILT_UNDER_SHELL` macro for C pre-processor.
 - `-fPIC`: Generate position-independent code. Required for building shared library.
 - `-fPIE`: Generate position-independent executable. Required for building shared library.
+
+The linker flags used will be introduced below.
 
 ## Compilation Process
 
@@ -121,7 +126,6 @@ Link the `stupid.o` into shared library `libstupid.so`.
 "${CC}" "${LDFLAGS[@]}" --verbose \
     -shared \
     -Wl,-rpath="${PWD}" \
-    -Wl,-soname,libstupid.so \
     -o libstupid.so stupid.o \
     &>libstupid.so.log
 ```
@@ -131,7 +135,6 @@ Arguments used here:
 - `-shared`: Instructs GCC to build shared library.
 - Arguments started with `-Wl` will be passed to GNU BinUtils linker, `ld`. They are:
   - `-rpath`, which defines static loader search path introduced below.
-  - `-soname`, which is name of the shared object.
 
 The GCC actually invokes:
 
@@ -143,4 +146,43 @@ See `man ld` for more details.
 
 ### Link the Library to Executables
 
-
+```shell
+LIBC_PATH="/usr/lib/x86_64-linux-gnu/"
+LIBGCC_PATH="/usr/lib/gcc/x86_64-linux-gnu/11"
+ld \
+    -dynamic-linker /lib64/ld-linux-x86-64.so.2 \
+    -rpath="${PWD}" \
+    -pie \
+    -z now \
+    -z relro \
+    -o main \
+    -L. \
+    -L"${LIBGCC_PATH}" \
+    -L"${LIBC_PATH}" \
+    "${LIBC_PATH}/Scrt1.o" \
+    "${LIBC_PATH}/crti.o" \
+    "${LIBGCC_PATH}/crtbeginS.o" \
+    main.o \
+    -lstupid \
+    -lgcc \
+    -lgcc_s \
+    -lc \
+    "${LIBGCC_PATH}/crtendS.o" \
+    "${LIBC_PATH}/crtn.o"
+ld \
+    -static \
+    -o main_static \
+    -L. \
+    -L"${LIBGCC_PATH}" \
+    -L"${LIBC_PATH}" \
+    "${LIBC_PATH}/crt1.o" \
+    "${LIBC_PATH}/crti.o" \
+    "${LIBGCC_PATH}/crtbeginT.o" \
+    main.o \
+    -lstupid \
+    --start-group \
+    -lgcc -lgcc_eh -lc \
+    --end-group \
+    "${LIBGCC_PATH}/crtend.o" \
+    "${LIBC_PATH}/crtn.o"
+```

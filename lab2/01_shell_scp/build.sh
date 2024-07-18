@@ -22,7 +22,6 @@ set -x
 "${CC}" "${LDFLAGS[@]}" --verbose \
     -shared \
     -Wl,-rpath="${PWD}" \
-    -Wl,-soname,libstupid.so \
     -o libstupid.so stupid.o \
     &>libstupid.so.log
 
