@@ -15,7 +15,7 @@
 
 In the following part, the term "shell" refers to Bash only. Some commands may not be reproducible in other shells. The following command creates a new shell with empty environment:
 
-```shell
+```bash
 env -i bash --noprofile --norc
 ```
 
@@ -31,7 +31,7 @@ Note that `env` is an executable provided by GNU CoreUtils.
 
 Get all shell variables through `set` or `declare`. Sample output:
 
-```shell
+```bash
 set
 # BASH=/usr/bin/bash
 # [...]
@@ -44,7 +44,7 @@ declare
 
 Set shell variable through `set` or `declare`. All following commands are equivalent:
 
-```shell
+```bash
 A=a
 set A=a 
 declare A=a
@@ -52,14 +52,14 @@ declare A=a
 
 Note, no blanks before or after `=`.
 
-```shell
+```bash
 A = a
 # A: command not found
 ```
 
 A Shell variable works in the current shell and its subshell.
 
-```shell
+```bash
 echo $A $BASH_SUBSHELL
 # a 0
 eval 'echo $A $BASH_SUBSHELL' # Does not create subshells.
@@ -79,7 +79,7 @@ f
 
 However, modifications in subshell will not reflect on original shell variable.
 
-```shell
+```bash
 A=1
 ((A++))
 echo $A
@@ -91,7 +91,7 @@ echo $A
 
 It will also not work in child shell.
 
-```shell
+```bash
 A=1
 echo 'echo $A' | bash
 # [EMPTY]
@@ -103,7 +103,7 @@ bash -c 'echo $A'
 
 Integer operations through `(())`:
 
-```shell
+```bash
 A=1
 echo $((A+1))
 # 2
@@ -125,7 +125,7 @@ echo $A
 
 Append through substitution.
 
-```shell
+```bash
 A=a
 A="${A} bbb"
 echo $A
@@ -148,7 +148,7 @@ For other string manipulation, use GNU CoreUtils, Grep, Sed, AWK instead.
 
 Getting all environment variables:
 
-```shell
+```bash
 export
 # declare -x OLDPWD
 # declare -x PWD="/mnt/f/home/Documents/yuzj_linux_workshop"
@@ -157,7 +157,7 @@ export
 
 Or,
 
-```shell
+```bash
 env
 # PWD=/mnt/f/home/Documents/yuzj_linux_workshop
 # SHLVL=1
@@ -166,7 +166,7 @@ env
 
 Environment variables works in child shells.
 
-```shell
+```bash
 declare -x A=a
 bash -c 'echo $A'
 # a
@@ -174,7 +174,7 @@ bash -c 'echo $A'
 
 However, it cannot be modified in child shells.
 
-```shell
+```bash
 declare -x A=a
 bash -c 'declare -x A=b'
 echo $A
@@ -183,7 +183,7 @@ echo $A
 
 Neither can it be modified in subshells.
 
-```shell
+```bash
 declare -x A=a
 (echo $A; declare -x | grep A)
 #a
@@ -198,7 +198,7 @@ echo $A
 
 Elevation of shell variables to environment variables can be done using `export` or `declare -x`.
 
-```shell
+```bash
 A=a
 echo $A
 # a
@@ -219,7 +219,7 @@ bash -c 'echo $A'
 
 Set environment variables to sub-processes through pre-pend or `env` executable.
 
-```shell
+```bash
 A=a bash -c 'echo $A'
 # a
 env A=a bash -c 'echo $A'
@@ -246,7 +246,7 @@ Warning: Depending on environment variables instead of system calls are not wise
 
 A command can be builtin, alias, function, or external executables. Tell them using `type` builtin.
 
-```shell
+```bash
 type if
 # if is a shell keyword
 type cd
@@ -267,7 +267,7 @@ type fn
 
 Use `type -a` to see resolution order. For example,
 
-```shell
+```bash
 function echo() { return 0; }
 alias echo="echo -E"
 type -a echo
@@ -284,7 +284,7 @@ type -a echo
 
 If some name is either builtin or external (e.g., `kill`), we can force shell to use its external version through:
 
-```shell
+```bash
 # An example of builtin kill
 kill --version
 # bash: kill: -version: invalid signal specification
@@ -303,7 +303,7 @@ Note that `which` is provided by GNU CoreUtils.
 
 Observe files read for login interactive shell (For Alpine Linux, change `openat` to `open`.):
 
-```shell
+```bash
 echo exit | \
     strace -e trace='openat' -e signal=none env -i bash -li 2>&1 1>/dev/null | \
     cut -d '"' -f 2 | \
@@ -330,7 +330,7 @@ echo exit | \
 
 Observe files read for non-login interactive shell:
 
-```shell
+```bash
 echo exit | \
     strace -e trace='openat' -e signal=none env -i bash -i 2>&1 1>/dev/null | \
     cut -d '"' -f 2 | \
@@ -354,7 +354,7 @@ echo exit | \
 
 Observe files read for non-login interactive shell:
 
-```shell
+```bash
 echo exit | \
     strace -e trace='openat' -e signal=none env -i bash 2>&1 1>/dev/null | \
     cut -d '"' -f 2 | \
@@ -368,7 +368,7 @@ echo exit | \
 
 Alias expansion is turned off for non-interactive shell.
 
-```shell
+```bash
 env -i bash << EOF
 shopt expand_aliases
 alias ls='ls -lFh'
@@ -415,7 +415,7 @@ Use `stdout` of `prog1` as `stdin` of `prog2`.
 
 Example:
 
-```shell
+```bash
 cat /etc/passwd | wc -l
 # 38
 ```
@@ -428,14 +428,14 @@ Use `file1` as `stdin` of `prog1`.
 
 Example:
 
-```shell
+```bash
 wc -l < /etc/passwd
 # 38
 ```
 
 Syntax:
 
-```shell
+```bash
 prog1 << EOF
 Contents
 EOF
@@ -445,7 +445,7 @@ Read from next line to `EOF` as `stdin` of `prog1`.
 
 Example:
 
-```shell
+```bash
 base64 -d << EOF
 SW4gdGhlIGJlZ2lubmluZyBHb2QgY
 3JlYXRlZCB0aGUgaGVhdmVuIGFuZC
@@ -470,7 +470,7 @@ Append (Add to bottom) file descriptor `n` of `prog1` to `file1`.
 
 Example:
 
-```shell
+```bash
 env ls -1 /etc > etc.txt
 wc -l etc.txt
 # 243 etc.txt
@@ -501,7 +501,7 @@ Syntax: `prog1 >(prog2)` to use `stdin` for `prog2` as a **file** in commandline
 
 Example:
 
-```shell
+```bash
 wc -l <(ls /etc)
 # 243 /dev/fd/63
 
@@ -517,7 +517,7 @@ Usage: `prog1 > fifo1` with `prog2 < fifo1` equals `prog1 | prog2`.
 
 Example:
 
-```shell
+```bash
 mkfifo fifo1 # May not work on certain file systems
 find 2> /dev/null | tee fifo1 &
 cat fifo1 | xz –c - > find.xz
@@ -535,7 +535,7 @@ rm -f fifo1
 
 Example:
 
-```shell
+```bash
 find /root 2>&1 | wc -l
 # 2
 find /root | wc -l
@@ -545,7 +545,7 @@ find /root | wc -l
 
 Some programs use `–` to represent `stdin`.
 
-```shell
+```bash
 echo "In the beginning..." | sha1sum -
 # 399203358dee31c80a1769a3c501901321bc08ed  -
 echo "In the beginning..." | sha1sum /dev/stdin
@@ -556,7 +556,7 @@ echo "In the beginning..." | sha1sum
 
 Some redirections create subshells. For example, process substitution creates subshells.
 
-```shell
+```bash
 echo $BASH_SUBSHELL
 # 0
 eval 'echo OUTER $BASH_SUBSHELL' <(eval 'echo INNER $BASH_SUBSHELL >&2')
@@ -566,7 +566,7 @@ eval 'echo OUTER $BASH_SUBSHELL' <(eval 'echo INNER $BASH_SUBSHELL >&2')
 
 Pipe creates subshells.
 
-```shell
+```bash
 true | eval 'echo $BASH_SUBSHELL'
 # 1
 true | false; echo $?
@@ -584,7 +584,7 @@ EOF
 
 Shell option `pipefail` allows failure of the entire command if one of the components failed.
 
-```shell
+```bash
 env -i bash --norc --noprofile << EOF
 set -ueo pipefail
 find /root 2>/dev/null | wc -l > /dev/null
@@ -594,7 +594,7 @@ EOF
 
 However, beware of commands thay may raise broken pipe exception:
 
-```shell
+```bash
 env -i bash --norc --noprofile << EOF
 set -ueo pipefail
 head -n 1 /etc/passwd | wc -l > /dev/null
@@ -625,7 +625,7 @@ Syntax: `$(prog)`
 
 Example:
 
-```shell
+```bash
 echo $(pwd)
 # /home/yuzj/Documents/yuzj_linux_workshop/lab2/01_shell_scp
 echo `pwd` # Obsolete form, not recommended.
@@ -636,7 +636,7 @@ echo `pwd` # Obsolete form, not recommended.
 
 Example:
 
-```shell
+```bash
 echo {1..5}
 # 1 2 3 4 5
 echo {001..005}
@@ -647,7 +647,7 @@ echo {001..005}
 
 Example:
 
-```shell
+```bash
 # ? match one character
 echo /bin/?z
 # /bin/7z /bin/lz /bin/uz /bin/xz
@@ -663,7 +663,7 @@ Other patterns may cause confusion, so not introduced.
 
 `test expr` and `[expr]` are equivalent.
 
-```shell
+```bash
 test 1 -lt 2; echo $?
 # 0
 
@@ -685,7 +685,7 @@ Secure shell script:
 - Add shebang line (e.g., `#!/usr/bin/env bash` or `#!/bin/bash`) for the correct shell.
 - Use LF instead of CRLF for shell scripts.
 - While reading a file, instead of:
-  ```shell
+  ```bash
   cat /etc/passwd | while read -r line; do
       echo $line
   done
@@ -693,7 +693,7 @@ Secure shell script:
 
   Use:
 
-  ```shell
+  ```bash
   while read -r line; do
       echo $line
   done < /etc/passwd
@@ -701,7 +701,7 @@ Secure shell script:
 
   Or:
 
-  ```shell
+  ```bash
   while read -r line; do
       echo $line
   done < <(cat /etc/passwd)

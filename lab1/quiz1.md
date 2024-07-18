@@ -76,7 +76,7 @@ Ver 0.3; Based on 0.2 in 2022 summer program.
    ```
 11. What does the following command do?
 
-   ```shell
+   ```bash
    xz -dc < backup.tar.xz | tar tvf - 2>&1 | tee out.log
    ```
 
@@ -131,7 +131,7 @@ Write a program (`table_formatter`) to format the table. It should accept some w
 
 Input:
 
-```shell
+```bash
 cat <<EOF | table_formatter --shrink 60 -d ';'
 NO.;COMMAND;EXIT;TIME
 1;bwa mem -M -R @RG"tID:case4_techrep_2tSM:case4_techrep_2tLB:WXStPL:Illumina" /gpfsdata/hg38.fa 1.fq 2.fq;0;3:47:51

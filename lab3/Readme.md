@@ -9,7 +9,7 @@ Before progression, execute `src/reproduce.sh` and `opt/reproduce.sh` to downloa
 
 ## Install ZLib
 
-```shell
+```bash
 cd src/zlib-1.3.1
 env -i PATH="/usr/bin" ./configure \
     --prefix="$(pwd)/../../opt/lab3"
@@ -23,13 +23,13 @@ Change working directory into `src/bwa-debian-0.7.17-7`.
 
 For GCC later than or equal to 10 (check through `gcc --version`), apply a required patch by:
 
-```shell
+```bash
 patch < debian/patches/gcc10.patch
 ```
 
 And build BWA by:
 
-```shell
+```bash
 env -i \
     PATH="/usr/bin" \
     C_INCLUDE_PATH="$(pwd)/../../opt/lab3/include" \
@@ -45,14 +45,14 @@ Environment variables used here:
 
 Manually install `bwa` and its documentations to desired place.
 
-```shell
+```bash
 install -D bwa ../../opt/lab3/bin/bwa
 install -D bwa.1 ../../opt/lab3/share/man/man1/bwa.1
 ```
 
 Now we get back to this directory and see whether `bwa` works.
 
-```shell
+```bash
 env -i PATH="opt/lab3/bin" bwa || true
 ```
 
@@ -75,20 +75,20 @@ Note: To use BWA, you need to first index the genome with `bwa index'.
 
 We may further find its manual using:
 
-```shell
+```bash
 env -i PATH="/usr/bin/" MANPATH="opt/lab3/share/man" man -w bwa # Display the path to desired manual file.
 # Shows: /home/yuzj/Documents/yuzj_linux_workshop/lab3/opt/lab3/share/man/man1/bwa.1
 ```
 
 And read it using (VS Code users may see `WARNING: terminal is not fully functional`):
 
-```shell
+```bash
 env -i PATH="/usr/bin/" MANPATH="opt/lab3/share/man" man bwa
 ```
 
 We may see libraries linked to `bwa` through `ldd`:
 
-```shell
+```bash
 env -i PATH="/usr/bin/" ldd opt/lab3/bin/bwa
 ```
 
@@ -116,7 +116,7 @@ Or:
 
 Or `readelf`:
 
-```shell
+```bash
 env -i PATH="/usr/bin/" readelf -d opt/lab3/bin/bwa |  grep -e NEEDED -e RUNPATH
 ```
 
@@ -133,7 +133,7 @@ Shows:
 
 Although SAMtools have a bundled HTSLib, we will build our own since the default configuration involves libraries that may not have been built. Entering `src/htslib-1.20`, we run:
 
-```shell
+```bash
 env -i PATH="/usr/bin" ./configure \
     --prefix="$(pwd)/../../opt/lab3" \
     --disable-bz2 \
@@ -153,7 +153,7 @@ Note the `LDFLAGS` and `CFLAGS` variable we added.
 
 Now HTSLib is installed to `opt/lab3`. Go back to current directory, observe its linked libraries using:
 
-```shell
+```bash
 ldd opt/lab3/lib/libhts.so.1.20
 ```
 
@@ -169,7 +169,7 @@ Generates:
 
 Let's build SAMtools. Entering `src/samtools-1.20`, we run:
 
-```shell
+```bash
 env -i PATH="/usr/bin" ./configure \
     --prefix="$(pwd)/../../opt/lab3" \
     --with-htslib="$(pwd)/../../opt/lab3" \
@@ -182,7 +182,7 @@ env -i PATH="/usr/bin" make -j8 install
 
 Now SAMtools should be installed. Let's see whether it works.
 
-```shell
+```bash
 env -i PATH="opt/lab3/bin/" samtools version
 ```
 
@@ -220,7 +220,7 @@ HTSlib URL scheme handlers present:
 
 Enter `src/kalign-debian-1%3.4.0-1`, and run:
 
-```shell
+```bash
 mkdir -p build
 cd build
 env -i PATH="$(pwd)/../../../opt/cmake-3.30.0-linux-x86_64/bin:/usr/bin" \
@@ -232,7 +232,7 @@ env -i PATH="$(pwd)/../../../opt/cmake-3.30.0-linux-x86_64/bin:/usr/bin" \
 
 Get back to the current directory and test whether kAlign is working using:
 
-```shell
+```bash
 opt/kalign-debian-1_3.4.0/bin/kalign --version
 ```
 

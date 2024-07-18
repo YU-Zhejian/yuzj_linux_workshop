@@ -1,6 +1,6 @@
 # Stupid C Program using CMake
 
-```shell
+```bash
 mkdir -p build
 cd build
 cmake ..

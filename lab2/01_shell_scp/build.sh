@@ -5,16 +5,18 @@ PWD="$(pwd)"
 [ -n "${CC:-}" ] || CC="$(which gcc)"
 [ -n "${AR:-}" ] || AR="$(which ar)"
 [ -n "${RANLIB:-}" ] || RANLIB="$(which ranlib)"
-[ -n "${CFLAFS:-}" ] || CFLAFS=("-O2" "-Wall" "-Wextra" "-DBUILT_UNDER_SHELL" "-fPIC" "-fPIE")
-[ -n "${LDFLAGS:-}" ] || LDFLAGS=("-L${PWD}")
+# shellcheck disable=SC2206
+[ -n "${CFLAGS:-}" ] && CFLAGS=(${CFLAGS}) || CFLAGS=("-O2" "-Wall" "-Wextra" "-DBUILT_UNDER_SHELL" "-fPIC" "-fPIE")
+# shellcheck disable=SC2206
+[ -n "${LDFLAGS:-}" ] && LDFLAGS=(${LDFLAGS}) || LDFLAGS=("-L${PWD}")
 set -x
 
 # Build
-"${CC}" "${CFLAFS[@]}" --verbose -E -o main.i ../src/main.c &>main.i.log
-"${CC}" "${CFLAFS[@]}" --verbose -S -o main.s main.i &>main.s.log
-"${CC}" "${CFLAFS[@]}" --verbose -c -o main.o main.s &>main.o.log
+"${CC}" "${CFLAGS[@]}" --verbose -E -o main.i ../src/main.c &>main.i.log
+"${CC}" "${CFLAGS[@]}" --verbose -S -o main.s main.i &>main.s.log
+"${CC}" "${CFLAGS[@]}" --verbose -c -o main.o main.s &>main.o.log
 
-"${CC}" "${CFLAFS[@]}" --verbose -c -o stupid.o ../src/stupid.c &>stupid.o.log
+"${CC}" "${CFLAGS[@]}" --verbose -c -o stupid.o ../src/stupid.c &>stupid.o.log
 
 # Link
 "${AR}" rvcs libstupid.a stupid.o &>libstupid.a.log

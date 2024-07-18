@@ -40,7 +40,7 @@ This lab allows you to build a Linux kernel from scratch and run it using PC emu
 
 The Linux kernel is bundled with diverse drivers that are not needed for this small lab. A pre-configured version can be used via:
 
-```shell
+```bash
 cp linux.ini src/linux-4.19.317/.config
 ```
 
@@ -48,13 +48,13 @@ This configuration is based on the default configuration (see below) and customi
 
 If you prefer to configure your own kernel, first generate a default configuration using:
 
-```shell
+```bash
 make -j8 -C src/linux-4.19.317 x86_64_defconfig
 ```
 
 Then customize in a terminal user interface (TUI) with:
 
-```shell
+```bash
 make -j8 -C src/linux-4.19.317 menuconfig
 ```
 
@@ -62,7 +62,7 @@ make -j8 -C src/linux-4.19.317 menuconfig
 
 Now we build the kernel and install Linux headers for developmental purposes. `env -i` was used to execute building process in a clean environment.
 
-```shell
+```bash
 env -i PATH="/usr/bin" \
     make -j8 -C src/linux-4.19.317 bzImage
 env -i PATH="/usr/bin"  \
@@ -73,7 +73,7 @@ env -i PATH="/usr/bin"  \
 
 Now the Linux kernel boot image will be available at `src/linux-4.19.317/arch/x86/boot/bzImage` with its headers installed to `opt/linux_headers`. The kernel could be booted via QEMU. Try:
 
-```shell
+```bash
 qemu-system-x86_64 \
     -m 2048 \
     -smp 1 \
@@ -89,7 +89,7 @@ The kernel will boot and panic since no root filesystem was specified. See `logs
 
 Almost all applications would work a C library (`libc`), so building such is important. For simplicity and size, we choose [Musl](https://musl.libc.org/) as our C library. Run:
 
-```shell
+```bash
 env -C src/musl-1.2.5 -i PATH="/usr/bin" \
     ./configure  --prefix="$(pwd)/opt/musl-1.2.5"
 env -C src/musl-1.2.5 -i PATH="/usr/bin" make -j8 install
@@ -103,7 +103,7 @@ An initial RAM filesystem is a Linux filesystem that exists as a memory image an
 
 Now we will compile a static hello world program against the installed Musl C library.
 
-```shell
+```bash
 mkdir -p opt/hello_world_initramfs
 env -i PATH="/usr/bin" \
     opt/musl-1.2.5/bin/musl-gcc \
@@ -116,7 +116,7 @@ strip opt/hello_world_initramfs/init
 
 And pack it into an initramfs:
 
-```shell
+```bash
 echo -e "init" | \
     cpio -ov -D opt/hello_world_initramfs -H newc | \
     gzip -9 > opt/hello_world_initramfs.cpio.gz
@@ -124,7 +124,7 @@ echo -e "init" | \
 
 Now run the kernel with our newly packed initramfs:
 
-```shell
+```bash
 qemu-system-x86_64 \
     -m 2048 \
     -smp 1 \
@@ -144,7 +144,7 @@ If you do not add `reboot` at the end of your C program, the kernel will go pani
 
 Now we will build an initramfs that have a shell and some basic utilities inside. For such purposes, [BusyBox](https://www.busybox.net) will be a good choice. It contains simplified versions of various utilities with clean dependency (Linux headers and the C library).
 
-```shell
+```bash
 # The default config do not contain network-related applications, rpm and dpkg.
 make -j8 -C src/busybox-1.36.1 defconfig # This step is mandatory
 cp busybox.ini src/busybox-1.36.1/.config
@@ -170,7 +170,7 @@ done
 gzip -9f opt/busybox_initramfs.cpio
 ```
 
-```shell
+```bash
 qemu-system-x86_64 \
     -m 2048 \
     -smp 1 \

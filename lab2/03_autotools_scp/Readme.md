@@ -1,6 +1,6 @@
 # Stupid C Program using GNU AutoTools
 
-```shell
+```bash
 cp ../src/* .
 autoreconf -f -v -i
 autoheader
