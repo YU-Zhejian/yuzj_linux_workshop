@@ -301,38 +301,21 @@ Note that `which` is provided by GNU CoreUtils.
 
 ## Shell Invocation: Login Shell, Interactive Shell and Shell Startup Files
 
-Observe files read for login interactive shell:
+Observe files read for login interactive shell (For Alpine Linux, change `openat` to `open`.):
 
 ```shell
 echo exit | \
     strace -e trace='openat' -e signal=none env -i bash -li 2>&1 1>/dev/null | \
     cut -d '"' -f 2 | \
     grep '^/' | \
-    grep -Ev "locale/|langpack|^/dev|/$|.*so.*"
+    grep -Ev "locale/|langpack|^/dev|/$|/etc/ld-.*|.*so.*"
 ```
 
 ```text
-/usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache
-/etc/nsswitch.conf
 /etc/passwd
-/usr/share/terminfo/d/dumb
+/etc/terminfo/d/dumb
 /etc/profile
-/etc/bash.bashrc
-/etc/profile.d/01-locale-fix.sh
-/etc/profile.d/Z97-byobu.sh
-/etc/profile.d/Z99-cloud-locale-test.sh
-/etc/profile.d/Z99-cloudinit-warnings.sh
-/etc/profile.d/bash_completion.sh
-/usr/share/bash-completion/bash_completion
-/etc/bash_completion.d/000_bash_completion_compat.bash
-/etc/bash_completion.d/git-prompt
-/usr/lib/git-core/git-sh-prompt
-/etc/bash_completion.d/global-python-argcomplete
-/usr/lib/python3/dist-packages/argcomplete/bash_completion.d/_python-argcomplete
-/etc/profile.d/cedilla-portuguese.sh
-/etc/profile.d/debuginfod.sh
-/etc/profile.d/gawk.sh
-/etc/profile.d/update-motd.sh
+/etc/profile.d/locale.sh
 /home/yuzj/.bash_profile
 /home/yuzj/.bash_login
 /home/yuzj/.profile
@@ -341,10 +324,8 @@ echo exit | \
 /home/yuzj/.inputrc
 /etc/inputrc
 /home/yuzj/.bash_logout
-/etc/bash.bash_logout
 /home/yuzj/.bash_history
 /home/yuzj/.bash_history
-/home/yuzj/.bash_history-01447.tmp
 ```
 
 Observe files read for non-login interactive shell:
@@ -354,28 +335,21 @@ echo exit | \
     strace -e trace='openat' -e signal=none env -i bash -i 2>&1 1>/dev/null | \
     cut -d '"' -f 2 | \
     grep '^/' | \
-    grep -Ev "locale/|langpack|^/dev|/$|.*so.*"
+    grep -Ev "locale/|langpack|^/dev|/$|/etc/ld-.*|.*so.*"
 ```
 
 ```text
-/usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache
-/etc/nsswitch.conf
 /etc/passwd
-/usr/share/terminfo/d/dumb
-/etc/bash.bashrc
+/etc/terminfo/d/dumb
+/etc/bash/bashrc
+/etc/profile.d/locale.sh
 /home/yuzj/.bashrc
-/home/yuzj/.bash_history
-/usr/share/bash-completion/bash_completion
-/etc/bash_completion.d/000_bash_completion_compat.bash
-/etc/bash_completion.d/git-prompt
-/usr/lib/git-core/git-sh-prompt
-/etc/bash_completion.d/global-python-argcomplete
-/usr/lib/python3/dist-packages/argcomplete/bash_completion.d/_python-argcomplete
-/home/yuzj/miniforge3/etc/profile.d/mamba.sh
 /home/yuzj/.bash_history
 /home/yuzj/.bash_history
 /home/yuzj/.inputrc
 /etc/inputrc
+/home/yuzj/.bash_history
+/home/yuzj/.bash_history
 ```
 
 Observe files read for non-login interactive shell:
@@ -385,12 +359,10 @@ echo exit | \
     strace -e trace='openat' -e signal=none env -i bash 2>&1 1>/dev/null | \
     cut -d '"' -f 2 | \
     grep '^/' | \
-    grep -Ev "locale/|langpack|^/dev|/$|.*so.*"
+    grep -Ev "locale/|langpack|^/dev|/$|/etc/ld-.*|.*so.*"
 ```
 
 ```text
-/usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache
-/etc/nsswitch.conf
 /etc/passwd
 ```
 
@@ -712,7 +684,6 @@ Secure shell script:
 - Read from `tty` instead of `stdin` for passwords. For example, `read -s PASSWD < /dev/tty; echo $PASSWD`.
 - Add shebang line (e.g., `#!/usr/bin/env bash` or `#!/bin/bash`) for the correct shell.
 - Use LF instead of CRLF for shell scripts.
-
 - While reading a file, instead of:
   ```shell
   cat /etc/passwd | while read -r line; do
