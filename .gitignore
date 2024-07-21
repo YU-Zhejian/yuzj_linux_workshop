@@ -3,4 +3,6 @@
 build/
 *.log
 tmp
-/Radme.*
+*.pdf
+*.htm
+*.html

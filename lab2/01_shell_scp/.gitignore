@@ -1,5 +1,6 @@
 *
+!/includes/
+!/cond_comp/
 !.gitignore
 !build.sh
 !Readme.md
-!/includes

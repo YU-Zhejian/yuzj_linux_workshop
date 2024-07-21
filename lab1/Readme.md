@@ -395,17 +395,18 @@ EOF
 # yuzj@DESKTOP-FHVJD55:/mnt/f/home/Documents/yuzj_linux_workshop$ exit
 # exit
 ```
+
 ## Redirections
 
 - Once a process is started, three "pipes" will be connected to it. Namely:
-    - Standard input (`stdin`) for file descriptor `0` and device `/dev/stdin`.
-    - Standard output (`stdout`) for file descriptor `1` and device `/dev/stdout`.
-    - Standard error (`stderr`) for file descriptor `2` and device `/dev/stderr`.
+  - Standard input (`stdin`) for file descriptor `0` and device `/dev/stdin`.
+  - Standard output (`stdout`) for file descriptor `1` and device `/dev/stdout`.
+  - Standard error (`stderr`) for file descriptor `2` and device `/dev/stderr`.
 - If there are no redirections, all three "pipes" are connected to your current **terminal**. That is, keyboard as `stdin`, screen as `stdout` and `stderr`.
 - Some special files:
-    - `/dev/null` is a "black hole" file. Anything appended will disappear.
-    - `/dev/random` generates pseudo-random numbers.
-    - `/dev/zero` generates `\0`s.
+  - `/dev/null` is a "black hole" file. Anything appended will disappear.
+  - `/dev/random` generates pseudo-random numbers.
+  - `/dev/zero` generates `\0`s.
 
 ### Pipes (`|`)
 
@@ -685,6 +686,7 @@ Secure shell script:
 - Add shebang line (e.g., `#!/usr/bin/env bash` or `#!/bin/bash`) for the correct shell.
 - Use LF instead of CRLF for shell scripts.
 - While reading a file, instead of:
+
   ```bash
   cat /etc/passwd | while read -r line; do
       echo $line

@@ -4,6 +4,8 @@ Version 1.0.
 
 This lab allows you to build a Linux kernel from scratch and run it using PC emulators.
 
+**WARNING**: This lab is **OPTIONAL**. Do not waste time there if you're busy.
+
 **WARNING**: This lab will be extremely tough for those who do not have sufficient experience in operating systems.
 
 **NOTE**: The success construction of the Linux kernel largely depends on multiple factors like the version of compilers, the kernel version of the hosting system, and architecture of the host machine, etc.
@@ -187,6 +189,6 @@ Now you may safely shut down the system through `reboot -f`. Have fun on your ne
 ## Host Systems Tested
 
 - Version 1.0 (this version):
-   - Linux Mint 21.3 machine with `11.4.0-1ubuntu1~22.04` GCC and `6.5.0-41-generic` kernel of architecture `x86_64`.
-   - Debian 13 Testing (`trixie`)  with `Debian 13.3.0-1` GCC and `Debian 6.5.6-1` kernel of architecture `x86_64`.
-   - Ubuntu 20.04 LTS (`focal`) with `Ubuntu 9.4.0-1ubuntu1~20.04.2` GCC and `5.15.0-87-generic #97~20.04.1-Ubuntu` kernel of architecture `x86_64`.
+  - Linux Mint 21.3 machine with `11.4.0-1ubuntu1~22.04` GCC and `6.5.0-41-generic` kernel of architecture `x86_64`.
+  - Debian 13 Testing (`trixie`)  with `Debian 13.3.0-1` GCC and `Debian 6.5.6-1` kernel of architecture `x86_64`.
+  - Ubuntu 20.04 LTS (`focal`) with `Ubuntu 9.4.0-1ubuntu1~20.04.2` GCC and `5.15.0-87-generic #97~20.04.1-Ubuntu` kernel of architecture `x86_64`.

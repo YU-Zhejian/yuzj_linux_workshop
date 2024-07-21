@@ -10,6 +10,14 @@ colorlinks: true
 
 The Linux workshop at Zhejiang University for Year 2 \& 3 Bioinformatics BSc students.
 
+> Many scientists and engineers spend much of their lives writing, debugging,
+> and maintaining software, but only a handful have ever been taught how to do
+> this effectively: after a couple of introductory courses, they are left to
+> rediscover (or reinvent) the rest of programming on their own. The result?
+> Most spend far too much time wrestling with software, instead of doing
+> research, but have no idea how reliable or efficient their programs are.
+> -- Greg Wilson
+
 ## What to Prepare before the Workshop
 
 ### Operating System
@@ -208,7 +216,7 @@ Building systems:
   # [...]
   ```
 
-- (Optional) [GNU TexInfo](https://www.gnu.org/software/texinfo/) and [LaTeX](https://www.latex-project.org/) for compiling GNU TexInfo files to PDF.
+- (Optional) [GNU TexInfo](https://www.gnu.org/software/texinfo/) and [LaTeX](https://www.latex-project.org/) for compiling GNU TexInfo files to PDF. Installation of LaTeX can be done with ease using [TeXLive](https://tug.org/texlive/), [MacTeX](https://tug.org/mactex/) or [MikTeX](https://miktex.org/) distributions.
 
   ```bash
   makeinfo --version
@@ -277,8 +285,28 @@ If you're using LabW Kiki, all packages should have been installed.
 
 ## How to Use These Labs
 
-The labs should be learnt in a non-linear manner. i.e., the knowledge taught at the front may rely on what is taught next. If you find yourself hard to understand something, skip it, read the docs, ask generative AI, or find answers on [Stack Overflow](https://stackoverflow.com/).
+The labs should be learnt in a non-linear manner. i.e., the knowledge taught at the front may rely on what is taught next. If you find yourself hard to understand something, skip it, read the docs, search the web, ask generative AI, or find answers on [Stack Overflow](https://stackoverflow.com/) [^ASK].
 
 The labs heavily relies on the official documentation of mentioned software. For example to finish lab1, you may extensively refer to [Bash Reference Manual](https://www.gnu.org/software/bash/manual/bash.html), its manual pages (`man bash`) or info pages (`info bash`).
 
-lab4 is **OPTIONAL**. Do not waste time there if you're busy.
+To read those Markdowns in a more friendly manner, you may compile them to PDF using [`pandoc`](https://pandoc.org/). Note that it requires LaTeX, whose link can be found above.
+
+```bash
+pandoc Readme.md -o Readme.pdf
+```
+
+For unfamiliar file formats, you are recommended to use [file](https://www.darwinsys.com/file/). For example:
+
+```bash
+file lab2/01_shell_scp/*.{a,so,s,o}
+# lab2/01_shell_scp/libstupid.a:  current ar archive
+# lab2/01_shell_scp/libstupid.so: ELF 64-bit LSB shared object, x86-64, version
+# 1 (SYSV), dynamically linked, BuildID[xxHash]=3698f67aecbefcf6, not stripped
+# lab2/01_shell_scp/main.s:       assembler source, ASCII text
+# lab2/01_shell_scp/main.o:       ELF 64-bit LSB relocatable, x86-64, version 1
+# (SYSV), not stripped
+# lab2/01_shell_scp/stupid.o:     ELF 64-bit LSB relocatable, x86-64, version 1
+# (SYSV), not stripped
+```
+
+[^ASK]: You're recommended to read [_How To Ask Questions The Smart Way_](http://www.catb.org/~esr/faqs/smart-questions.html) ([Chinese](https://lug.ustc.edu.cn/wiki/doc/smart-questions/)) before posting questions on public forums, mailing lists, or IRC channels.

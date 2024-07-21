@@ -1,34 +1,58 @@
+---
+geometry: margin=20mm
+hyperrefoptions:
+- linktoc=all
+fontfamily: noto
+colorlinks: true
+---
+
 # Compiling Stupid C Program using Plain Shell Script
 
-Compilation of source codes can of course done by shell scripts. Following is the step-to-step guide of the compilation, linking and loading process. For all-in-one script, use:
+Compilation of source codes can of course done by shell scripts. For all-in-one script, use:
 
 ```bash
-# For GCC flavor
-CC=gcc ./build.sh
-# For Clang
-CC=clang \
-  LDFLAGS="-fuse-ld=lld -L$(pwd) --rtlib=compiler-rt" \
-  CFLAGS="-O2 -Wall -Wextra -DBUILT_UNDER_SHEL -fPIC -fPIE" \
-  AR=llvm-ar RANLIB=llvm-ranlib ./build.sh
+# Compiling using GCC
+env -i PATH="/usr/bin/" CC=gcc ./build.sh
+# Compiling using Clang
+env -i PATH="/usr/bin/" \
+    CC=clang \
+    LDFLAGS="-fuse-ld=lld -L$(pwd) --rtlib=compiler-rt" \
+    CFLAGS="-O2 -Wall -Wextra -DBUILT_UNDER_SHEL -fPIC -fPIE" \
+    AR=llvm-ar \
+    RANLIB=llvm-ranlib \
+    ./build.sh
 ```
 
-Now we begin step-to-step tutorial. Create a new clean shell, and follow the guide:
+For cleanup, use:
+
+```bash
+rm -f *main* *stupid*
+```
+
+The step-by-step instruction is as follows. Create a new clean shell, and follow the guide:
 
 ## Set Required Variables
 
 ```bash
+# Where we are.
 PWD="$(pwd)"
 # CC: Path to the C compiler. Will use gcc (GCC) or clang (LLVM).
 [ -n "${CC:-}" ] || CC="$(which gcc)"
-# AR: Path to static library archive manipulator. Will use ar (GNU BinUtils) or llvm-ar (LLVM).
+# AR: Path to static library archive manipulator.
+# Will use ar (GNU BinUtils) or llvm-ar (LLVM).
 [ -n "${AR:-}" ] || AR="$(which ar)"
-# RANLIB: Path to index generator for static libraries. Will use ranlib (GNU BinUtils) or llvm-ranlib (LLVM).
+# RANLIB: Path to index generator for static libraries.
+# Will use ranlib (GNU BinUtils) or llvm-ranlib (LLVM).
 [ -n "${RANLIB:-}" ] || RANLIB="$(which ranlib)"
 
 # Default C compiler arguments.
-[ -n "${CFLAGS:-}" ] && CFLAGS=(${CFLAGS}) || CFLAGS=("-O2" "-Wall" "-Wextra" "-DBUILT_UNDER_SHELL" "-fPIC" "-fPIE")
+[ -n "${CFLAGS:-}" ] && \
+    CFLAGS=(${CFLAGS}) || \
+    CFLAGS=("-O2" "-Wall" "-Wextra" "-DBUILT_UNDER_SHELL" "-fPIC" "-fPIE")
 # Default linker flags
-[ -n "${LDFLAGS:-}" ] && LDFLAGS=(${LDFLAGS}) || LDFLAGS=("-L${PWD}")
+[ -n "${LDFLAGS:-}" ] && \
+    LDFLAGS=(${LDFLAGS}) || \
+    LDFLAGS=("-L${PWD}")
 ```
 
 Explanation of used C compiler flags:
@@ -40,19 +64,75 @@ Explanation of used C compiler flags:
 - `-fPIC`: Generate position-independent code. Required for building shared library.
 - `-fPIE`: Generate position-independent executable. Required for building shared library.
 
+For the LLVM flavor, additional linker flags will be added to ensure usage of LLVM toolchain. They are:
+
+- `-fuse-ld=lld`: Use LLVM LLD linker instead of `ld` from GNU BinUtils.
+- `--rtlib=compiler-rt`: Use LLVM compiler runtime instead of GCC runtime library (`libgcc`).
+
 The linker flags used will be introduced below.
 
 ## Compilation Process
 
 ### The Pre-Processing Phase
 
+During the pre-processing phase, the C source code is consumed with pre-processor most macros started with `#` expanded, replaced, and eliminated. An example will be:
+
 ```bash
-"${CC}" "${CFLAGS[@]}" --verbose -E -o main.i ../src/main.c &>main.i.log
+"${CC}" "${CFLAGS[@]}" -E -o main.i ../src/main.c
 ```
 
-The `-E` flag instructs GCC to stop after pre-processing.
+The `-E` flag instructs the compiler to stop after pre-processing. The generated file, `main.i`, is a C source file that contains no pre-processor macros (Those started with `#`).
 
-The generated file, `main.i`, is a C source file that contains no pre-processor macros (Those started with `#`).
+#### A More Detailed Pre-Processing Example
+
+The file `test.c` defines macro `CONDITION_INT` on whether the macro `CONDITION_ONE` is defined. Following is an example where `CONDITION_ONE` is not defined:
+
+```bash
+gcc -E -o /dev/stdout cond_comp/test.c | grep -vE '^#|^$'
+```
+
+Generates:
+
+```c
+int main(){
+    return 0;
+}
+```
+
+where the macro `CONDITION_INT` in function `main` was replaced by its value `0`. On the contrary, after defining macro `CONDITION_ONE` through `-D` parameter:
+
+```bash
+gcc -E -DCONDITION_ONE -o /dev/stdout cond_comp/test.c | grep -vE '^#|^$'
+```
+
+We will have:
+
+```c
+int main(){
+    return 1;
+}
+```
+
+An example of using such property is conditional compilation. For example, both [`zlib`](http://www.zlib.net/) and [`libdeflate`](https://github.com/ebiggers/libdeflate) can compress files. The former is more popular while the latter is usually faster. So, after detecting whether those libraries are installed, we may:
+
+```c
+// Prioritize libdeflate for its fast speed.
+#if defined (HAVE_LINDEFLATE)
+#include <libdeflate.h>
+[...] // Functions written using libdeflate
+
+#elif defined(HAVE_ZLIB) // Fallback to zlib.
+#include <zlib.h>
+[...] // Functions written using zlib
+
+#else // Have nothing!
+#error "Either zlib or libdeflate should be installed!"
+#endif
+```
+
+and define macros `HAVE_ZLIB` or `HAVE_LINDEFLATE` accordingly.
+
+#### Common Failures at Pre-Processing
 
 A common error here is failure in finding inclusion files. For example,
 
@@ -62,137 +142,177 @@ echo '#include <some_nasty_file.h>' | gcc -E -x c - -o /dev/null
 # compilation terminated.
 ```
 
-To solve this issue, we need to firstly find `NON_EXIST.h`, and append it to inclusion search paths. It can be done through `-I` pre-processor argument:
+To solve this issue, we need to firstly find `some_nasty_file.h`, and append it to inclusion search paths. It can be done through `-I` pre-processor argument:
 
 ```bash
-echo '#include <some_nasty_file.h>' | gcc -E -x c - -o /dev/null -I"$(pwd)/includes"
+echo '#include <some_nasty_file.h>' | \
+    gcc -E -x c - -o /dev/null -I"$(pwd)/includes"
 ```
 
 Or through `C_INCLUDE_PATH` environment variable:
 
 ```bash
-echo '#include <some_nasty_file.h>' | C_INCLUDE_PATH="$(pwd)/includes" gcc -E -x c - -o /dev/null
+echo '#include <some_nasty_file.h>' | \
+    C_INCLUDE_PATH="$(pwd)/includes" gcc -E -x c - -o /dev/null
 ```
-
-See manual of `cpp` for more details.
 
 See `main.i.log` to see what GCC's actually doing. You may also found a list of inclusion search paths.
 
-GCC actually invokes:
+#### Useful Links
 
-```bash
-# CPP is the GCC C pre-processor.
-cpp -DBUILT_UNDER_SHELL -o main.i ../src/main.c
-```
+- [_The C Preprocessor_](https://gcc.gnu.org/onlinedocs/cpp/): Official documentation for GNU CPP.
+- [_CPP(1)_](https://www.man7.org/linux/man-pages/man1/cpp.1.html): Manual pages for GNU CPP.
 
 ### The Compile and Assemble Phase
 
 This phase converts pre-processed file to assembly code, and converts assembly code to binary file (object file). If error occurs here, it may not be recoverable.
 
 ```bash
-"${CC}" "${CFLAGS[@]}" --verbose -S -o main.s main.i &>main.s.log
-"${CC}" "${CFLAGS[@]}" --verbose -c -o main.o main.s &>main.o.log
+"${CC}" "${CFLAGS[@]}" -S -o main.s main.i
+"${CC}" "${CFLAGS[@]}" -c -o main.o main.s
 ```
 
-GCC actually invokes:
+For GCC, it actually invokes `cc1` (Can be found through `"gcc -print-prog-name=cc1`) for compilation and `as` (Part of GNU BinUtils) for assembly. For faster code, you may set `-O2` during compilation and `-mtune=native` during assembly. Note that the latter generates less portable code.
 
-```bash
-# CC1 is the GCC compiler, but normally not exposed to $PATH.
-# So invoke it with absolute path.
-# See <https://unix.stackexchange.com/questions/77779/relationship-between-cc1-and-gcc> for details.
-"$(gcc -print-prog-name=cc1)" -quiet "${CFLAGS[@]}" main.i -o main.s
-# AS is the GCC assembler.
-as -o main.o main.s
-```
+Among those steps, two files are generated: `main.s` contains human-readable assembly code and `main.o` contains machine code. The latter is called "object file" and is commonly in a format named Executable and Linkable Format (ELF). This file is important since it contains all our code from `main.c` and the header it uses and can be used for linking purposes.
 
-For faster code, you may set both `-O2` and `-mtune=native` in `CFLAGS`.
+#### Useful Links
 
-The object file, `main.o`, is commonly in Executable and Linkable Format (ELF). We may poke its properties using `file`:
+- [_Relationship between cc1 and gcc? - Unix & Linux Stack Exchange_](https://unix.stackexchange.com/questions/77779/relationship-between-cc1-and-gcc): A StackOverflow question on relationship between GCC and `cc1`.
+- [_AS(1)_](https://www.man7.org/linux/man-pages/man1/as.1.html): Manual page of GNU Assembler.
+- [_Options That Control Optimization_](https://gcc.gnu.org/onlinedocs/gcc-14.1.0/gcc/Optimize-Options.html): GCC help on generating faster programs.
+- [_ELF(5)_](https://www.man7.org/linux/man-pages/man5/elf.5.html): Manual page for ELF, the binary format for executables, shared libraries, and object files.
+- [_Options Controlling the Kind of Output_](https://gcc.gnu.org/onlinedocs/gcc-14.1.0/gcc/Overall-Options.html#Options-Controlling-the-Kind-of-Output) for GCC options that controls the type of output (Assembly code? Object file? Executables? Or others?)
 
-```bash
-file main.o
-# main.o: ELF 64-bit LSB relocatable, x86-64, version 1 (SYSV), not stripped
-```
-
-See `man elf` for more details.
+## The Linking Process
 
 ### Creating `libstupid` Library
 
-Compile `stupid.c` into relocatable ELF `stupid.o`.
+Before packing `libstupid` into a library we should get its object file.
 
 ```bash
-"${CC}" "${CFLAGS[@]}" --verbose -c -o stupid.o ../src/stupid.c &>stupid.o.log
+"${CC}" "${CFLAGS[@]}" -c -o stupid.o ../src/stupid.c
 ```
 
-Archive the `stupid.o` into static library `libstupid.a`. The static library is in fact an archive of ELF relocatables.
+#### Static Library
+
+Static library is usually in format of `libXXXX.a`. It is an archive of object files involved with an index. It can be created using `ar` and `ranlib` from GNU BinUtils. For example:
 
 ```bash
-"${AR}" rvcs libstupid.a stupid.o &>libstupid.a.log
-"${RANLIB}" libstupid.a &>>libstupid.a.log
+"${AR}" rvcs libstupid.a stupid.o
+# r - stupid.o
+"${RANLIB}" libstupid.a
 ```
-Link the `stupid.o` into shared library `libstupid.so`.
+
+GNU `ar` understands `tar`-like commandline arguments. For example, the object files inside an archive can be listed using:
 
 ```bash
-"${CC}" "${LDFLAGS[@]}" --verbose \
-    -shared \
-    -Wl,-rpath="${PWD}" \
-    -o libstupid.so stupid.o \
-    &>libstupid.so.log
+ar tvf libstupid.a
+# rw-r--r-- 0/0   1216 Jan  1 08:00 1970 stupid.o
+
+# The following is an example of an archive that contains multiple object files.
+ar tvf /usr/lib/x86_64-linux-gnu/libz.a
+# rw-r--r-- 0/0   3648 Jan  1 08:00 1970 adler32.o
+# rw-r--r-- 0/0  12104 Jan  1 08:00 1970 crc32.o
+# rw-r--r-- 0/0  28112 Jan  1 08:00 1970 deflate.o
+# [...]
+# rw-r--r-- 0/0   9408 Jan  1 08:00 1970 gzlib.o
+# rw-r--r-- 0/0   8976 Jan  1 08:00 1970 gzread.o
+# rw-r--r-- 0/0   9512 Jan  1 08:00 1970 gzwrite.o
+```
+
+See:
+
+- [_AR(1)_](https://www.man7.org/linux/man-pages/man1/ar.1.html): Manual page of GNU Archiver.
+- [_RANLIB(1)_](https://www.man7.org/linux/man-pages/man1/ranlib.1.html): Manual page of GNU Ranlib, the program that generates index for an archive.
+
+#### Shared Library
+
+Shared library is usually in the form of `libXXXX.so`. Unlike static libraries, they can be loaded at run time. The following code links the `stupid.o` into shared library `libstupid.so`:
+
+```bash
+"${CC}" "${LDFLAGS[@]}" -shared -o libstupid.so stupid.o
 ```
 
 Arguments used here:
 
 - `-shared`: Instructs GCC to build shared library.
+
+### Creation of Executables
+
+The following example generates `main` that is linked to shared libraries and `main_static` that is linked to static libraries.
+
+```bash
+"${CC}" "${LDFLAGS[@]}" -Wl,-rpath="${PWD}" -o main main.o -lstupid
+"${CC}" "${LDFLAGS[@]}" -static -static-libgcc -o main_static main.o -lstupid
+```
+
+- `-lXXXX` is the common form of linking library `XXXX` to the executable. For example, to link zlib (`libz.so`), we uses `-lz`; to like HTSlib (`libhts.so`), we uses `-lhts`.
+- `-L${PWD}` sets the linker search path.
 - Arguments started with `-Wl` will be passed to GNU BinUtils linker, `ld`. They are:
-  - `-rpath`, which defines static loader search path introduced below.
+  - `-rpath`, which defines the path where the loader may search. It should be set to where `libstupid.so` will be installed.
+- `-static` and `-static-libgcc` requires static linking of targeted libraries (`-lstupid` and implicitly `-lc`, etc.) and GCC runtime library (`-lgcc` and `-lgcc_s`) where code in static libraries will be copied to the executable, thus creating no runtime dependencies.
 
-The GCC actually invokes:
+### Common Failures at Link Time
 
-```bash
-ld "${LDFLAGS[@]}" -shared -rpath="${PWD}" -soname=libstupid.so -o libstupid.so stupid.o
-```
-
-See `man ld` for more details.
-
-### Link the Library to Executables
+The linker may fail to find a library. For example:
 
 ```bash
-LIBC_PATH="/usr/lib/x86_64-linux-gnu/"
-LIBGCC_PATH="/usr/lib/gcc/x86_64-linux-gnu/11"
-ld \
-    -dynamic-linker /lib64/ld-linux-x86-64.so.2 \
-    -rpath="${PWD}" \
-    -pie \
-    -z now \
-    -z relro \
-    -o main \
-    -L. \
-    -L"${LIBGCC_PATH}" \
-    -L"${LIBC_PATH}" \
-    "${LIBC_PATH}/Scrt1.o" \
-    "${LIBC_PATH}/crti.o" \
-    "${LIBGCC_PATH}/crtbeginS.o" \
-    main.o \
-    -lstupid \
-    -lgcc \
-    -lgcc_s \
-    -lc \
-    "${LIBGCC_PATH}/crtendS.o" \
-    "${LIBC_PATH}/crtn.o"
-ld \
-    -static \
-    -o main_static \
-    -L. \
-    -L"${LIBGCC_PATH}" \
-    -L"${LIBC_PATH}" \
-    "${LIBC_PATH}/crt1.o" \
-    "${LIBC_PATH}/crti.o" \
-    "${LIBGCC_PATH}/crtbeginT.o" \
-    main.o \
-    -lstupid \
-    --start-group \
-    -lgcc -lgcc_eh -lc \
-    --end-group \
-    "${LIBGCC_PATH}/crtend.o" \
-    "${LIBC_PATH}/crtn.o"
+gcc -o main_with_unknown_libs main.o -lstupid1
+# /usr/bin/ld: cannot find -lstupid1: No such file or directory
+# collect2: error: ld returned 1 exit status
 ```
+
+At this time, you should check whether the package that provides `libstupid1.so` is installed. If not, have it installed.
+
+A common scenario using Conda or other PMS is that a different version of required library is installed. Here, you may create a symbolic link to cheat the linker. This also works for the loader.
+
+### Useful Links
+
+- [_Static Linking Considered Harmful_](https://www.akkadia.org/drepper/no_static_linking.html): A blog criticising static linking.
+- [_c++ - Static linking vs dynamic linking - Stack Overflow_](https://stackoverflow.com/questions/1993390/static-linking-vs-dynamic-linking): A StackOverflow question on difference between shared and static linking.
+- [_Dynamic Linking_](http://harmful.cat-v.org/software/dynamic-linking/): An e-mail that criticising dynamic linking.
+- [_LD(1)_](https://www.man7.org/linux/man-pages/man1/ld.1.html): Manual page of GNU Linker, `ld`.
+
+## The Loading Process
+
+The `main_static` file is a static executable, and no loading of exytra libraries are needed. However, `main` file requires loading of additional libraries. This can be inspected using `readelf` command provided by GNU BinUtils:
+
+```bash
+readelf -d main | grep -e NEEDED -e RUNPATH -
+#  0x0000000000000001 (NEEDED)             Shared library: [libstupid.so]
+#  0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
+#  0x000000000000001d (RUNPATH)            Library runpath:
+#  [/home/yuzj/Documents/yuzj_linux_workshop/lab2/01_shell_scp]
+```
+
+`readelf` also told us the `RUNPATH` bundled to the executable, which is previously specified using `-Wl, -rpath`. You may roughly understand that the shared libraries (`libstupid.so` and `libc.so.6`) will be searched in directories specified in `RUNPATH` and then standard system directories.
+
+### Common Failures at Load Time
+
+An example of not specifying `RUNATH`:
+
+```bash
+gcc -o main_no_rpath main.o -lstupid -L.
+cp main_no_rpath /tmp
+env -i -C /tmp/ /tmp/main_no_rpath
+# /tmp/main_no_rpath: error while loading shared libraries:
+# libstupid.so: cannot open shared object file: No such file or directory
+```
+
+See? Without `RUNPATH`, the `libstupid.so` cannot be found.
+
+What can we do if the application is already compiled but lacks `RPATH`? The extra paths for searching shared libraries **AT LOAD TIME** can be specified in `LD_LIBRARY_PATH` environment variable. For example:
+
+```bash
+env -i -C /tmp/ LD_LIBRARY_PATH=$(pwd) /tmp/main_no_rpath
+# Hello world from the stupid C program. Built under Shell scripts.
+```
+
+### Useful Links
+
+- [_LD(1)_](https://www.man7.org/linux/man-pages/man1/ld.1.html): Manual pages for GNU BinUtils linker.
+- [_LD.SO(8)_](https://www.man7.org/linux/man-pages/man8/ld.so.8.html): Manual pages for GNU dynamic loader.
+- [_RPATH issue_](https://wiki.debian.org/RpathIssue): Debian explaination on why specifying `RUNPATH` is a bad practice.
+- [_Shared Libraries: Understanding Dynamic Loading_](https://amir.rachum.com/shared-libraries/): A great introduction on shared library and loading.
+- [_Shared Libraries: The Dynamic Linker_ (PDF)](https://www.man7.org/training/download/shlib_dynlinker_slides.pdf): An intermediate-level course on linkers. Written by the author of [_The Linux Programming Interface_](https://www.man7.org/tlpi/index.html) (TLPI book).

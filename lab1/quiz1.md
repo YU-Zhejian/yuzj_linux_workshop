@@ -15,7 +15,7 @@ Ver 0.3; Based on 0.2 in 2022 summer program.
 1. Explain the differences between `#!/usr/bin/env bash`, `#!/usr/bin/bash` and `#!bash`.
 2. Explain the differences between `$(which ls) -1 .` and `find . -maxdepth 1`.
 3. If variable `A` is array, explain the differences between `${A}`, `${A[*]}`, `${A[@]}`.
-4. Explain difference between `'` and `"`.
+4. Explain difference between strings quoted in `'` and `"`.
 5. Commands like `echo`, `kill` and `time` can be provided by both shell builtin and external binary. Explain the difference between shell builtin and external binary. How can we ensure the command we get is the desired one?
 6. Given the following shell script:
 
@@ -24,7 +24,7 @@ Ver 0.3; Based on 0.2 in 2022 summer program.
    set -ue
    RESULT=0
    yes | head -n 10 | while read -r line; do
-   	RESULT=$((${RESULT}+1))
+       RESULT=$((${RESULT}+1))
    done
    echo "${RESULT}"
    ```
@@ -61,7 +61,7 @@ Ver 0.3; Based on 0.2 in 2022 summer program.
    if command_1; then command_2; else command_3; fi
    ```
 
-10. The following shell scripts are designed to create `1.sh` if it does not exist, and do nothing otherwise. Explain the difference between those scripts.
+10. The following shell scripts are designed to create `1.sh` if it does not exist, and do nothing otherwise. Explain the difference between.
 
    ```bash
    #!/usr/bin/env bash
@@ -69,11 +69,14 @@ Ver 0.3; Based on 0.2 in 2022 summer program.
    [ ! -f 1.sh ] && touch 1.sh
    ```
 
+   and:
+
    ```bash
    #!/usr/bin/env bash
    set -ueo pipefail
    [ -f 1.sh ] || touch 1.sh
    ```
+
 11. What does the following command do?
 
    ```bash
