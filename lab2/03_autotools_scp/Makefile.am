@@ -14,5 +14,6 @@ info_TEXINFOS = stupid.texi
 
 # Add alias for check
 test: check
+# Add alias for doc
 doc: dvi ps pdf html info
 install-doc: install-dvi install-ps install-pdf install-html install-info

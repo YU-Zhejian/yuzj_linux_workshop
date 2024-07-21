@@ -1,3 +1,11 @@
+---
+geometry: margin=20mm
+hyperrefoptions:
+- linktoc=all
+fontfamily: noto
+colorlinks: true
+---
+
 # Lab 4: Build Linux Kernel from Scratch
 
 Version 1.0.
@@ -7,6 +15,8 @@ This lab allows you to build a Linux kernel from scratch and run it using PC emu
 **WARNING**: This lab is **OPTIONAL**. Do not waste time there if you're busy.
 
 **WARNING**: This lab will be extremely tough for those who do not have sufficient experience in operating systems.
+
+**WARNING**: This lab assumes X86\_64 hosts, which usually have [Intel](https://www.intel.com/content/www/us/en/homepage.html) or [AMD](https://www.amd.com/en.html) CPU(s). If you're on machine of other architectures (e.g., [Apple Silicon](https://support.apple.com/en-us/116943), [Raspberry Pi](https://www.raspberrypi.com/) and other [ARM](https://www.arm.com), [Loongson](https://www.loongson.cn/EN/), etc.), you may experience difficulties.
 
 **NOTE**: The success construction of the Linux kernel largely depends on multiple factors like the version of compilers, the kernel version of the hosting system, and architecture of the host machine, etc.
 
@@ -35,7 +45,7 @@ This lab allows you to build a Linux kernel from scratch and run it using PC emu
 ## Preparation
 
 - Get files using `src/reproduce.sh`.
-- For building the kernel, see [Minimal requirements to compile the Kernel](https://www.kernel.org/doc/html/v4.19/process/changes.html#minimal-requirements-to-compile-the-kernel).
+- Get additional dependencies from [_Minimal requirements to compile the Kernel_](https://www.kernel.org/doc/html/v4.19/process/changes.html#minimal-requirements-to-compile-the-kernel).
 - For running the generated kernel and initramfs using virtual machine, install [QEMU](https://www.qemu.org) and [GNU cpio](https://www.gnu.org/software/cpio/).
 
 ## Configure the Linux Kernel
@@ -76,14 +86,27 @@ env -i PATH="/usr/bin"  \
 Now the Linux kernel boot image will be available at `src/linux-4.19.317/arch/x86/boot/bzImage` with its headers installed to `opt/linux_headers`. The kernel could be booted via QEMU. Try:
 
 ```bash
+KERNEL_PARAMS="nokaslr console=tty0 console=ttyS0,115200"
 qemu-system-x86_64 \
     -m 2048 \
     -smp 1 \
     -machine pc \
     -kernel ./src/linux-4.19.317/arch/x86/boot/bzImage \
-    -append "nokaslr console=tty0 console=ttyS0,115200" \
+    -append "${KERNEL_PARAMS}" \
     -nographic
 ```
+
+The additional command-line arguments to QEMU are:
+
+- `-m 2048`: Specifies 2048 MiB of memory.
+- `-smp`: With 1 CPU.
+- `-machine pc`: Emulate a X86\_64 device.
+- `-kernel`: The kernel boot image.
+- `-append ${KERNEL_PARAMS}`: Parameters appended to the kernel. They are:
+  - `nokaslr`: Disable kernel randomization.
+  - `console=tty0`: Add screen (`tty0`) as console.
+  - `console=ttyS0,115200`: Use serial port 0 as console with 115,200 baud.
+- `-nographic`: Disable graphics and emulate a serial port instead.
 
 The kernel will boot and panic since no root filesystem was specified. See `logs/kernel.1.log` for the log on my system. Don't forget to terminate the QEMU emulator with `kill`.
 
@@ -127,18 +150,19 @@ echo -e "init" | \
 Now run the kernel with our newly packed initramfs:
 
 ```bash
+KERNEL_PARAMS="${KERNEL_PARAMS} root=/dev/ram rootfstype=ramfs"
 qemu-system-x86_64 \
     -m 2048 \
     -smp 1 \
     -machine pc \
     -kernel ./src/linux-4.19.317/arch/x86_64/boot/bzImage \
     -initrd opt/hello_world_initramfs.cpio.gz \
-    -append "nokaslr console=tty0 console=ttyS0,115200 root=/dev/ram rdinit=/init rootfstype=ramfs" \
+    -append "${KERNEL_PARAMS}" \
     -nographic \
     -no-reboot
 ```
 
-The additional `-no-reboot` parameter will force QEMU to exit when a reboot is issues. The init process successfully printed "Hello world!" and exit, which results in kernel panic. See `logs/kernel.2.log` for details.
+The additional `-no-reboot` parameter will force QEMU to exit when a reboot is issues. The init process successfully printed "Hello world!" and reboots the guest (which will be trapped by QEMU). See `logs/kernel.2.log` for details.
 
 If you do not add `reboot` at the end of your C program, the kernel will go panic (for `init` being killed). See `logs/kernel.2_fail.log`.
 
@@ -179,7 +203,7 @@ qemu-system-x86_64 \
     -machine pc \
     -kernel ./src/linux-4.19.317/arch/x86_64/boot/bzImage \
     -initrd opt/busybox_initramfs.cpio.gz \
-    -append "nokaslr console=tty0 console=ttyS0,115200 root=/dev/ram rdinit=/init rootfstype=ramfs" \
+    -append "${KERNEL_PARAMS}" \
     -nographic \
     -no-reboot
 ```

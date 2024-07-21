@@ -6,7 +6,7 @@ This directory contains a very simple using GNU LibTool and GNU Make. The former
 make clean install
 ```
 
-Try change some environment variables like `CC` or `PREFIX` and see what' happenning. For example:
+Try change some environment variables like `CC` or `PREFIX` and see what's happening. For example:
 
 ```bash
 CC=clang make clean install

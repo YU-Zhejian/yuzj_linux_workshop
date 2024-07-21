@@ -309,4 +309,8 @@ file lab2/01_shell_scp/*.{a,so,s,o}
 # (SYSV), not stripped
 ```
 
+## Contribute
+
+Contributions are always welcome. However, please raise an issue or contact the author through <Zhejian.23@intl.zju.edu.cn> before submitting pull requests.
+
 [^ASK]: You're recommended to read [_How To Ask Questions The Smart Way_](http://www.catb.org/~esr/faqs/smart-questions.html) ([Chinese](https://lug.ustc.edu.cn/wiki/doc/smart-questions/)) before posting questions on public forums, mailing lists, or IRC channels.

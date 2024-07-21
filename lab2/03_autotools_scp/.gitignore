@@ -61,8 +61,8 @@ libtool
 !/stupid.texi
 /main.*
 /main
-/INSTALL
 /config.h
 *tar*
 /src/
 *~
+!build.sh
