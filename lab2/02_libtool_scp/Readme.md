@@ -11,3 +11,21 @@ Try change some environment variables like `CC` or `PREFIX` and see what's happe
 ```bash
 CC=clang make clean install
 ```
+
+To see targets supported by the underlying Makefile, we may (From [here](https://unix.stackexchange.com/questions/230047/how-to-list-all-targets-in-make)):
+
+```bash
+make -qp | \
+    awk -F':' '/^[a-zA-Z0-9][^$#\/\t=]*:([^=]|$)/ {split($1,A,/ /);for(i in A)print A[i]}' | \
+    sort -u
+# all
+# clean
+# install
+# lib%.la
+# libstupid.la
+# main
+# main.lo
+# main_static
+# Makefile
+# stupid.lo
+```
