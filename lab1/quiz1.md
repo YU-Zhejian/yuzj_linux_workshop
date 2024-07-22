@@ -1,3 +1,10 @@
+---
+geometry: margin=20mm
+hyperrefoptions:
+- linktoc=all
+fontfamily: noto
+colorlinks: true
+---
 # Quiz on Shell
 
 Ver 0.3; Based on 0.2 in 2022 summer program.

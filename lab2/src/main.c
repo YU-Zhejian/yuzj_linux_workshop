@@ -12,7 +12,7 @@ int main()
 #elif defined(BUILT_UNDER_MAKE_LIBTOOL)
     built_under = "GNU Make/LibTool";
 #elif defined(BUILT_UNDER_SHELL)
-    built_under = "Shell scripts";
+    built_under = "shell scripts";
 #else
     built_under = "Unknown";
 #endif

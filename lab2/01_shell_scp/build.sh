@@ -21,11 +21,7 @@ set -x
 # Link
 "${AR}" rvcs libstupid.a stupid.o &>libstupid.a.log
 "${RANLIB}" libstupid.a &>>libstupid.a.log
-"${CC}" "${LDFLAGS[@]}" --verbose \
-    -shared \
-    -o libstupid.so \
-    stupid.o \
-    &>libstupid.so.log
+"${CC}" "${LDFLAGS[@]}" --verbose -shared -o libstupid.so stupid.o &>libstupid.so.log
 
 "${CC}" "${LDFLAGS[@]}" --verbose -Wl,-rpath="${PWD}" -o main main.o -lstupid &>main.log
 "${CC}" "${LDFLAGS[@]}" --verbose -static -static-libgcc -o main_static main.o -lstupid &>main_static.log

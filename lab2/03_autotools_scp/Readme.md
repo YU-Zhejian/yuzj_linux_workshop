@@ -41,7 +41,7 @@ autoreconf -f -v -i
 # autoreconf: Leaving directory '.'
 ```
 
-Note that this also generates `Makefile.in` from `Makefile.am` since we require GNU AutoMake in `configure.ac`. It also generates `ltmain.sh`, a Shell script containing GNU LibTool under the current platform. If your `configure.ac` does not require above modules, they may not be presented.
+Note that this also generates `Makefile.in` from `Makefile.am` since we require GNU AutoMake in `configure.ac`. It also generates `ltmain.sh`, a shell script containing GNU LibTool under the current platform. If your `configure.ac` does not require above modules, they may not be presented.
 
 Now we have `configure`. Let's do the configuration. The script will turn `Makefile.in` into `Makefile`, allowing us to build the program using GNU Make.
 

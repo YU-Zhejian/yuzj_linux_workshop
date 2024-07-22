@@ -1,3 +1,10 @@
+---
+geometry: margin=20mm
+hyperrefoptions:
+- linktoc=all
+fontfamily: noto
+colorlinks: true
+---
 # Lab 1: Shell Commands and Redirection
 
 ## Learning Objectives
@@ -57,7 +64,21 @@ A = a
 # A: command not found
 ```
 
-A Shell variable works in the current shell and its subshell.
+A shell variable can be represented in multiple forms.
+
+```bash
+echo $A
+# a
+echo ${A}
+# a
+echo "${A}"
+# a
+# Single quote prevents expansion.
+echo '${A}'
+# ${A}
+```
+
+A shell variable works in the current shell and its subshell.
 
 ```bash
 echo $A $BASH_SUBSHELL
@@ -309,23 +330,20 @@ echo exit | \
     cut -d '"' -f 2 | \
     grep '^/' | \
     grep -Ev "locale/|langpack|^/dev|/$|/etc/ld-.*|.*so.*"
-```
-
-```text
-/etc/passwd
-/etc/terminfo/d/dumb
-/etc/profile
-/etc/profile.d/locale.sh
-/home/yuzj/.bash_profile
-/home/yuzj/.bash_login
-/home/yuzj/.profile
-/home/yuzj/.bash_history
-/home/yuzj/.bash_history
-/home/yuzj/.inputrc
-/etc/inputrc
-/home/yuzj/.bash_logout
-/home/yuzj/.bash_history
-/home/yuzj/.bash_history
+# /etc/passwd
+# /etc/terminfo/d/dumb
+# /etc/profile
+# /etc/profile.d/locale.sh
+# /home/yuzj/.bash_profile
+# /home/yuzj/.bash_login
+# /home/yuzj/.profile
+# /home/yuzj/.bash_history
+# /home/yuzj/.bash_history
+# /home/yuzj/.inputrc
+# /etc/inputrc
+# /home/yuzj/.bash_logout
+# /home/yuzj/.bash_history
+# /home/yuzj/.bash_history
 ```
 
 Observe files read for non-login interactive shell:
@@ -336,20 +354,17 @@ echo exit | \
     cut -d '"' -f 2 | \
     grep '^/' | \
     grep -Ev "locale/|langpack|^/dev|/$|/etc/ld-.*|.*so.*"
-```
-
-```text
-/etc/passwd
-/etc/terminfo/d/dumb
-/etc/bash/bashrc
-/etc/profile.d/locale.sh
-/home/yuzj/.bashrc
-/home/yuzj/.bash_history
-/home/yuzj/.bash_history
-/home/yuzj/.inputrc
-/etc/inputrc
-/home/yuzj/.bash_history
-/home/yuzj/.bash_history
+# /etc/passwd
+# /etc/terminfo/d/dumb
+# /etc/bash/bashrc
+# /etc/profile.d/locale.sh
+# /home/yuzj/.bashrc
+# /home/yuzj/.bash_history
+# /home/yuzj/.bash_history
+# /home/yuzj/.inputrc
+# /etc/inputrc
+# /home/yuzj/.bash_history
+# /home/yuzj/.bash_history
 ```
 
 Observe files read for non-login interactive shell:
@@ -360,10 +375,7 @@ echo exit | \
     cut -d '"' -f 2 | \
     grep '^/' | \
     grep -Ev "locale/|langpack|^/dev|/$|/etc/ld-.*|.*so.*"
-```
-
-```text
-/etc/passwd
+# /etc/passwd
 ```
 
 Alias expansion is turned off for non-interactive shell.
@@ -385,10 +397,10 @@ alias ls='ls -lFh'
 type -a ls
 exit
 EOF
-# yuzj@DESKTOP-FHVJD55:/mnt/f/home/Documents/yuzj_linux_workshop$ shopt expand_aliases
+# yuzj@DESKTOP-FHVJD55:[...]/yuzj_linux_workshop$ shopt expand_aliases
 # expand_aliases  on
-# yuzj@DESKTOP-FHVJD55:/mnt/f/home/Documents/yuzj_linux_workshop$ alias ls='ls -lFh'
-# yuzj@DESKTOP-FHVJD55:/mnt/f/home/Documents/yuzj_linux_workshop$ type -a ls
+# yuzj@DESKTOP-FHVJD55:[...]/yuzj_linux_workshop$ alias ls='ls -lFh'
+# yuzj@DESKTOP-FHVJD55:[...]/yuzj_linux_workshop$ type -a ls
 # ls is aliased to `ls -lFh'
 # ls is /usr/bin/ls
 # ls is /bin/ls
@@ -655,7 +667,8 @@ echo /bin/?z
 
 # * match any character
 echo /bin/*z
-# /bin/7z /bin/compiz /bin/gts2xyz /bin/lz /bin/pigz /bin/ppmtopuzz /bin/tgz /bin/unpigz /bin/unxz /bin/uz /bin/xz
+# /bin/7z /bin/compiz /bin/gts2xyz /bin/lz /bin/pigz
+# /bin/ppmtopuzz /bin/tgz /bin/unpigz /bin/unxz /bin/uz /bin/xz
 ```
 
 Other patterns may cause confusion, so not introduced.

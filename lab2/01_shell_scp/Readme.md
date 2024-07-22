@@ -50,9 +50,7 @@ PWD="$(pwd)"
     CFLAGS=(${CFLAGS}) || \
     CFLAGS=("-O2" "-Wall" "-Wextra" "-DBUILT_UNDER_SHELL" "-fPIC" "-fPIE")
 # Default linker flags
-[ -n "${LDFLAGS:-}" ] && \
-    LDFLAGS=(${LDFLAGS}) || \
-    LDFLAGS=("-L${PWD}")
+[ -n "${LDFLAGS:-}" ] &&  LDFLAGS=(${LDFLAGS}) || LDFLAGS=("-L${PWD}")
 ```
 
 Explanation of used C compiler flags:
@@ -306,7 +304,7 @@ What can we do if the application is already compiled but lacks `RPATH`? The ext
 
 ```bash
 env -i -C /tmp/ LD_LIBRARY_PATH=$(pwd) /tmp/main_no_rpath
-# Hello world from the stupid C program. Built under Shell scripts.
+# Hello world from the stupid C program. Built under shell scripts.
 ```
 
 ### Useful Links

@@ -18,7 +18,7 @@
 ## Files in this Directory
 
 - `src`: The source code.
-- `01_shell_scp`: Compilation script in pure Shell.
+- `01_shell_scp`: Compilation script in pure shell.
 - `02_libtool_scp`: Compilation script in GNU Makefile and GNU Libtool.
 - `03_autotools_scp`: Compilation script in GNU AutoTools.
 - `04_cmake_scp`: Compilation script in CMake.

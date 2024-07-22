@@ -281,6 +281,7 @@ If you're using LabW Kiki, all packages should have been installed.
 - `.clang-*`: Configurations for clang-format and clang-tidy.
 - `fmt.sh`: Automatically format all files.
 - `License.md`: The license of the project.
+- `CMakeLists.txt`: A file for working under Jetbrains CLion or VSCode. For syntax highlighting only; Do **NOT** use CMake to build this project.
 - `Readme.md`: This file.
 
 ## How to Use These Labs
