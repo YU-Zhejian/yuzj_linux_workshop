@@ -1,6 +1,7 @@
 *
 !/includes/
 !/cond_comp/
+!/cond_comp/test.c
 !.gitignore
 !build.sh
 !Readme.md

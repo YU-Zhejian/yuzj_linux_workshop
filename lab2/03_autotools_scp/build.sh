@@ -12,7 +12,7 @@ autoreconf -f -v -i &>build.autoreconf.log
 
 env -i PATH="/usr/bin" ./configure --prefix="$(pwd)/opt" &>build.configure.log
 
-if which makeinfo &> /dev/null && which pdflatex &> /dev/null; then
+if which makeinfo &>/dev/null && which pdflatex &>/dev/null; then
     env -i PATH="/usr/bin" make -j8 doc &>build.make_doc.log
     env -i PATH="/usr/bin" make -j8 install install-doc &>build.make.log
 fi
