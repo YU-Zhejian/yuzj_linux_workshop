@@ -24,7 +24,7 @@ main_static: libstupid.la main.lo
 
 .PHONY: clean
 clean:
-	rm -fr *.o *.lo .libs *.la main
+	rm -fr ./*.o ./*.lo .libs ./*.la main ./*.exe ./*.dll
 
 .PHONY: install
 install: all

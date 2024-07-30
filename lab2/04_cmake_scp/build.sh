@@ -12,11 +12,13 @@ env -i -C build_make PATH="/usr/bin" make install -j8 \
 env -i -C build_make PATH="/usr/bin" ctest \
     &>build_make.ctest.log
 
-env -i -C build_ninja PATH="/usr/bin" cmake \
-    -DCMAKE_C_COMPILER=clang \
-    -G Ninja \
-    .. &>build_ninja.configure.log
-env -i -C build_ninja PATH="/usr/bin" ninja -j8 \
-    &>build_ninja.make.log
-env -i -C build_ninja PATH="/usr/bin" ninja -t graph |
-    dot -Tpdf -ocmake_ninja.pdf
+if which ninja &>/dev/null && which dot &>/dev/null; then
+    env -i -C build_ninja PATH="/usr/bin" cmake \
+        -DCMAKE_C_COMPILER=clang \
+        -G Ninja \
+        .. &>build_ninja.configure.log
+    env -i -C build_ninja PATH="/usr/bin" ninja -j8 \
+        &>build_ninja.make.log
+    env -i -C build_ninja PATH="/usr/bin" ninja -t graph |
+        dot -Tpdf -ocmake_ninja.pdf
+fi
