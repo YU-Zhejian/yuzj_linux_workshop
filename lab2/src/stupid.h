@@ -1,3 +1,14 @@
+/*!
+ * @file stupid.h
+ * @author YU ZJ
+ * @brief The API of libstupid.
+ * @version 0.1
+ * @date 2025-04-13
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ * API of libstupid.
+ */
 #ifndef STUPID_H
 #define STUPID_H
 

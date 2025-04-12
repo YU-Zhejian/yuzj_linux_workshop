@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 set -uex
-rm  -fr ./*stupid* ./*main*
+rm -fr ./*stupid* ./*main*

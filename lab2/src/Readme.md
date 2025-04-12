@@ -11,7 +11,7 @@ Where `[XXXXX]` is the build system used and exit with 0.
 ## Files in this Directory
 
 - `main.c`: The main executable.
-- `stupid.h`: The header file that contains function signature (API) for `libstupid`, which contains a function `int stupid_add(int a, int b)`.
+- `stupid.h`: The header file that contains function signature (or, application programming interface/API) for `libstupid`, which contains a function `int stupid_add(int a, int b)`.
 - `stupid.c`: The implementation of functions defined in `libstupid`.
 
 The desired output will be:

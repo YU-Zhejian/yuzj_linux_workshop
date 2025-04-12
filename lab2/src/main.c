@@ -1,5 +1,6 @@
-#include "stdio.h"
 #include "stupid.h"
+
+#include <stdio.h>
 
 int main()
 {

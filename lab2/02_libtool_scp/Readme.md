@@ -6,7 +6,7 @@ This directory contains a very simple using GNU LibTool and GNU Make. The former
 make clean install
 ```
 
-Try change some environment variables like `CC` or `PREFIX` and see what's happening. For example:
+Try to change some environment variables like `CC` or `PREFIX` and see what's happening. For example:
 
 ```bash
 CC=clang make clean install
@@ -29,3 +29,35 @@ make -qp | \
 # Makefile
 # stupid.lo
 ```
+
+## GNU Make
+
+GNU Make is, at essence, an executor of a direct acrylic graph of dependencies.
+
+GNU Make is formed by a set of rules that are defined in a Makefile. For example, this rule with wildcard:
+
+```make
+%.lo: ../src/%.c
+	libtool --tag=CC --mode=compile $(CC) $(CFLAGS) -c $<
+```
+
+Would build object files with the `.lo` suffix from a source file. And this rule:
+
+```make
+main: libstupid.la main.lo
+	libtool --tag=CC --mode=link $(CC) $(LDFLAGS) -rpath $(PREFIX)/lib/ -o main $^
+```
+
+Would create `main` by linking `libstupid.la` and `main.lo`.
+
+GNU Make will rebuild the target if any of its dependencies have changed (i.e., a newer modification time).
+
+GNU Make also supports phony targets, which are non-file targets that will always be rebuilt. For example:
+
+```make
+.PHONY: clean
+clean:
+	[...]
+```
+
+Read its manual for more details. Using GNU Make will also largely simplify daily maintenance \& bioinformatics work.

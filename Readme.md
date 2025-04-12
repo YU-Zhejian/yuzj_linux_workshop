@@ -10,7 +10,7 @@ colorlinks: true
 
 Updated 2025/04.
 
-The Linux workshop at Zhejiang University for Year 2 \& 3 Bioinformatics BSc students.
+The Linux workshop at Zhejiang University for Year 2 \& 3 Bioinformatics B.Sc. students.
 
 > Many scientists and engineers spend much of their lives writing, debugging,
 > and maintaining software, but only a handful have ever been taught how to do
@@ -59,7 +59,7 @@ sudo apt-get install \
 sudo apt-get install libgcc-12-dev # Replace 12 with GCC version you just installed
 ```
 
-Below are the introduction to some of the packages:
+Below are the introduction to some packages:
 
 #### Basic Utilities
 
@@ -121,10 +121,10 @@ Below are the introduction to some of the packages:
 
   ```bash
   gcc --version
-  # gcc (Ubuntu 13.3.0-3ubuntu1) 13.3.0
+  # gcc (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0
   # [...]
   g++ --version
-  # g++ (Ubuntu 13.3.0-3ubuntu1) 13.3.0
+  # g++ (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0
   # [...]
   ```
 
@@ -132,7 +132,7 @@ Below are the introduction to some of the packages:
 
   ```bash
   clang --version
-  # Ubuntu clang version 18.1.8 (1)
+  # Ubuntu clang version 18.1.3 (1)
   # Target: x86_64-pc-linux-gnu
   # Thread model: posix
   # InstalledDir: /usr/bin
@@ -142,7 +142,7 @@ Below are the introduction to some of the packages:
 
   ```bash
   ld --version
-  # GNU ld (GNU Binutils for Ubuntu) 2.42.50.20240710
+  # GNU ld (GNU Binutils for Ubuntu) 2.42
   # [...]
   ```
 
@@ -150,10 +150,10 @@ Below are the introduction to some of the packages:
 
   ```bash
   llvm-ranlib --version
-  # Ubuntu LLVM version 18.1.8
+  # Ubuntu LLVM version 18.1.3
   #   Optimized build.
   ld.lld --version
-  # Ubuntu LLD 18.1.8 (compatible with GNU linkers)
+  # Ubuntu LLD 18.1.3 (compatible with GNU linkers)
   ```
 
 - [GNU LibTool](https://www.gnu.org/software/libtool/) for `libtool` executable. For Debian-based distributions, installing [`libtool`](https://packages.debian.org/stable/libtool) is usually not enough. You also need [`libtool-bin`](https://packages.debian.org/stable/libtool-bin).
@@ -170,7 +170,7 @@ Below are the introduction to some of the packages:
   
     ```bash
     ldd --version
-    # ldd (Ubuntu GLIBC 2.39-0ubuntu9) 2.39
+    # ldd (Ubuntu GLIBC 2.39-0ubuntu8.4) 2.39
     # [...]
     ```
 
@@ -178,13 +178,13 @@ Below are the introduction to some of the packages:
   - [`libc6`](https://packages.debian.org/stable/libc6) for glibc libraries and loaders.
   - [`libgcc-12-dev`](https://packages.debian.org/stable/libgcc-12-dev) (Replace `12` with your GCC version accordingly) for GCC runtime library.
 
-Test whether you have get all those by running (replace `gcc` by `clang` as your wish):
+Test whether you have a working pipeline by running (replace `gcc` by `clang` as your wish):
 
 ```bash
-echo 'int main(){return 0;}' | gcc -o tmp -Wall -Wextra -fPIE -x c -
+CFLAGS=("-Wall" "-Wextra" "-x" "c")
+echo 'int main(){return 0;}' | gcc -o tmp -fPIE "${CFLAGS[@]}" -
 ./tmp
-echo 'int main(){return 0;}' | \
-  gcc -o tmp -Wall -Wextra -fPIE -x c - -static -static-libgcc
+echo 'int main(){return 0;}' | gcc -o tmp "${CFLAGS[@]}" - -static -static-libgcc
 ./tmp
 rm -f tmp
 ```
@@ -198,7 +198,6 @@ If any error occurs, your toolchain is not complete!
   ```bash
   make --version
   # GNU Make 4.3
-  # Built for x86_64-pc-linux-gnu
   # [...]
   ```
   
@@ -206,7 +205,7 @@ If any error occurs, your toolchain is not complete!
 
   ```bash
   cmake --version
-  # cmake version 3.29.6
+  # cmake version 3.28.3
   #
   # CMake suite maintained and supported by Kitware (kitware.com/cmake).
   ```
@@ -225,13 +224,14 @@ If any error occurs, your toolchain is not complete!
 - (Optional) [GNU TexInfo](https://www.gnu.org/software/texinfo/) and [LaTeX](https://www.latex-project.org/) for compiling GNU TexInfo files to PDF. Installation of LaTeX can be done with ease using [TeXLive](https://tug.org/texlive/), [MacTeX](https://tug.org/mactex/) or [MikTeX](https://miktex.org/) distributions.
 
   ```bash
+  info --version
+  # info (GNU texinfo) 7.1
+  # [...]
   makeinfo --version
   # texi2any (GNU texinfo) 7.1
   # [...]
   pdflatex --version
-  # MiKTeX-pdfTeX 4.15 (MiKTeX 23.5)
-  # (C) 1982 D. E. Knuth, (C) 1996-2023 Han The Thanh
-  # TeX is a trademark of the American Mathematical Society.
+  # MiKTeX-pdfTeX 4.19 (MiKTeX 24.12)
   # [...]
   ```
 
@@ -241,7 +241,7 @@ If any error occurs, your toolchain is not complete!
 
   ```bash
   wget --version
-  # GNU Wget 1.24.5 built on linux-gnu.
+  # GNU Wget 1.24.4 built on linux-gnu.
   # [...]
   ```
 
@@ -267,8 +267,8 @@ If any error occurs, your toolchain is not complete!
 
   ```bash
   xz --version
-  # xz (XZ Utils) 5.6.2
-  # liblzma 5.6.2
+  # xz (XZ Utils) 5.4.5
+  # liblzma 5.4.5
   ```
 
 - [bzip2](https://sourceware.org/bzip2) for `bzip2`.
@@ -290,9 +290,9 @@ If any error occurs, your toolchain is not complete!
 
 ## How to Use These Labs
 
-The labs should be learnt in a non-linear manner. i.e., the knowledge taught at the front may rely on what is taught next. If you find yourself hard to understand something, skip it, read the docs, search the web, ask generative AI, or find answers on [Stack Overflow](https://stackoverflow.com/) [^ASK].
+The labs should be learned in a non-linear manner. i.e., the knowledge taught at the front may rely on what is taught next. If you find yourself hard to understand something, skip it, read the docs, search the web, ask large-language models, or find answers on [Stack Overflow](https://stackoverflow.com/) [^ASK].
 
-The labs heavily relies on the official documentation of mentioned software. For example to finish lab1, you may extensively refer to [Bash Reference Manual](https://www.gnu.org/software/bash/manual/bash.html), its manual pages (`man bash`) or info pages (`info bash`).
+The labs heavily relies on the official documentation of mentioned software. For example to finish lab1, you may extensively refer to [Bash Reference Manual](https://www.gnu.org/software/bash/manual/bash.html), its manual pages (`man bash`, or see it [online](https://www.man7.org/linux/man-pages//man1/bash.1.html)) or info pages (`info bash`).
 
 To read those Markdowns in a more friendly manner, you may compile them to PDF using [`pandoc`](https://pandoc.org/). Note that it requires LaTeX, whose link can be found above.
 
@@ -316,6 +316,6 @@ file lab2/01_shell_scp/*.{a,so,s,o}
 
 ## Contribute
 
-Contributions are always welcome. However, please raise an issue or contact the author through <Zhejianyu@intl.zju.edu.cn> before submitting pull requests.
+Contributions are always welcome. However, please raise an issue or contact the author through <mailto:Zhejianyu@intl.zju.edu.cn> before submitting pull requests.
 
 [^ASK]: You're recommended to read [_How To Ask Questions The Smart Way_](http://www.catb.org/~esr/faqs/smart-questions.html) ([Chinese](https://lug.ustc.edu.cn/wiki/doc/smart-questions/)) before posting questions on public forums, mailing lists, or IRC channels.

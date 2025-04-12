@@ -20,7 +20,9 @@ colorlinks: true
 2. GNU CoreUtils, GNU Grep, GNU Sed, and GNU AWK.
 3. `strace`.
 
-In the following part, the term "shell" refers to Bash only. Some commands may not be reproducible in other shells. The following command creates a new shell with empty environment:
+In the following part, the term "shell" refers to GNU Bash only. Some commands may not be reproducible in other shells.
+
+The following command creates a new shell with empty environment:
 
 ```bash
 env -i bash --noprofile --norc
@@ -49,11 +51,11 @@ Set shell variable through `set` or `declare`. All following commands are equiva
 
 ```bash
 A=a
-set A=a 
+set A=a
 declare A=a
 ```
 
-Note, no blanks before or after `=`.
+Note, no blanks before or after `=`. The following command will fail:
 
 ```bash
 A = a
@@ -74,24 +76,36 @@ echo '${A}'
 # ${A}
 ```
 
-A shell variable works in the current shell and its subshell.
+The curly braces and quotes are recommended. Look at the following example:
 
 ```bash
-echo $A $BASH_SUBSHELL
-# a 0
-eval 'echo $A $BASH_SUBSHELL' # Does not create subshells.
-# a 0
-(echo $A $BASH_SUBSHELL) # Creates a subshell.
-# a 1
-{ eval 'echo $A $BASH_SUBSHELL'; } # Does not create subshells.
-# a 0
-true | eval 'echo $A $BASH_SUBSHELL' # Creates a subshell.
-# a 1
+A=a
+A_S=a_xxxxxx
 
-function f(){ echo $B $BASH_SUBSHELL; } # Does not create subshells.
+echo "${A}_S" "$A_S"
+# a_S a_xxxxxx
+```
+
+Using curly braces allows clear distinguishing between those 2 variables.
+
+A shell variable works in the current shell and its subshell. The shell variable `BASH_SUBSHELL` shows the level of subshell. Note that the subshell is not a new process (as reflected by variable `$$`).
+
+```bash
+echo $A $BASH_SUBSHELL $$
+# a 0 7022
+eval 'echo $A $BASH_SUBSHELL $$' # Does not create subshells.
+# a 7022
+(echo $A $BASH_SUBSHELL $$) # Creates a subshell.
+# a 1 7022
+{ eval 'echo $A $BASH_SUBSHELL $$'; } # Does not create subshells.
+# a 0 7022
+true | eval 'echo $A $BASH_SUBSHELL $$' # Creates a subshell.
+# a 1 7022
+
+function f(){ echo $B $BASH_SUBSHELL $$; } # Does not create subshells.
 B=b
 f
-# b 0
+# b 0 7022
 ```
 
 However, modifications in subshell will not reflect on original shell variable.
@@ -101,19 +115,19 @@ A=1
 ((A++))
 echo $A
 # 2
-(((A++)); echo $A $SHLVL); echo $A $SHLVL
+(((A++)); echo $A $BASH_SUBSHELL); echo $A $BASH_SUBSHELL
 # 3 1
 # 2 0
 ```
 
-It will also not work in child shell.
+It will also not work in child shell. A child shell is a new process, as the PID of the child shell (reflected by variable `$$`) differs from its parent. In the following example, the variable `A` is not recognized in child shell.
 
 ```bash
 A=1
-echo 'echo $A' | bash
-# [EMPTY]
-bash -c 'echo $A'
-# [EMPTY]
+echo 'echo $A $$' | bash
+# 30446
+bash -c 'echo $A $$'
+# 30622
 ```
 
 ### Basic Operations
@@ -149,7 +163,7 @@ echo $A
 # a bbb
 ```
 
-For other string manipulation, use GNU CoreUtils, Grep, Sed, AWK instead.
+For other string manipulation, use GNU CoreUtils (Especially `tr`), Grep, Sed, AWK instead.
 
 ### Special shell variables
 
@@ -181,7 +195,7 @@ env
 # _=/usr/bin/env
 ```
 
-Environment variables works in child shells.
+Environment variables work in child shells.
 
 ```bash
 declare -x A=a
@@ -237,11 +251,15 @@ bash -c 'echo $A'
 Set environment variables to sub-processes through pre-pend or `env` executable.
 
 ```bash
+A=a bash -c 'env' | grep '^A'
+# A=a
 A=a bash -c 'echo $A'
 # a
 env A=a bash -c 'echo $A'
 # a
 ```
+
+Environment variables can be passed to all sub-processes started (forked) from the shell. It can change the behavior of sub-processes.
 
 ### Special Environment Variables
 
@@ -314,9 +332,9 @@ env kill --version
 # kill from procps-ng 4.0.4
 ```
 
-Note that `which` is provided by GNU CoreUtils.
+Note that `which` and `env` are provided by GNU CoreUtils.
 
-## Shell Invocation: Login Shell, Interactive Shell and Shell Startup Files
+## Shell Invocation
 
 Observe files read for login interactive shell (For Alpine Linux, change `openat` to `open`.):
 
@@ -415,6 +433,7 @@ EOF
   - `/dev/null` is a "black hole" file. Anything appended will disappear.
   - `/dev/random` generates pseudo-random numbers.
   - `/dev/zero` generates `\0`s.
+  - `/dev/tty` is the controlling terminal of the current process. I.e, the terminal that connects to your interactive shell.
 
 ### Pipes (`|`)
 
@@ -426,7 +445,7 @@ Example:
 
 ```bash
 cat /etc/passwd | wc -l
-# 38
+# 55
 ```
 
 ### Less than (`<`)
@@ -439,7 +458,7 @@ Example:
 
 ```bash
 wc -l < /etc/passwd
-# 38
+# 55
 ```
 
 Syntax:
@@ -515,7 +534,7 @@ wc -l <(ls /etc)
 # 243 /dev/fd/63
 
 tar cf >(wc -c) .
-# 20480
+# 819200
 ```
 
 ### First-In-First-Out (FIFO) Files
@@ -563,14 +582,14 @@ echo "In the beginning..." | sha1sum
 399203358dee31c80a1769a3c501901321bc08ed  -
 ```
 
-Some redirections create subshells. For example, process substitution creates subshells.
+Some redirections create subshells. For example, process substitution creates subshells. However, they do not create child shell.
 
 ```bash
 echo $BASH_SUBSHELL
 # 0
-eval 'echo OUTER $BASH_SUBSHELL' <(eval 'echo INNER $BASH_SUBSHELL >&2')
-# OUTER 0 /dev/fd/63
-# INNER 1
+eval 'echo OUTER $BASH_SUBSHELL $$' <(eval 'echo INNER $BASH_SUBSHELL $$ >&2')
+# OUTER 0 7022 /dev/fd/63
+# INNER 1 7022
 ```
 
 Pipe creates subshells.
@@ -665,13 +684,17 @@ echo /bin/?z
 echo /bin/*z
 # /bin/7z /bin/compiz /bin/gts2xyz /bin/lz /bin/pigz
 # /bin/ppmtopuzz /bin/tgz /bin/unpigz /bin/unxz /bin/uz /bin/xz
+
+# However, they will not work if no files matching the pattern.
+echo *xxxxx
+# *xxxxx
 ```
 
 Other patterns may cause confusion, so not introduced.
 
 ### `test` keyword
 
-`test expr` and `[expr]` are equivalent.
+`test expr` and `[ expr ]` are equivalent. Note that the blank space inside the square brackets are required.
 
 ```bash
 test 1 -lt 2; echo $?
@@ -681,7 +704,7 @@ test 1 -lt 2; echo $?
 # 0
 ```
 
-`[[expr]]` provides more powerful features.
+`[[ expr ]]` provides more powerful features.
 
 ## Shell Software Engineering
 

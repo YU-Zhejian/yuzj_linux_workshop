@@ -155,7 +155,7 @@ If you have GNU TexInfo installed, you may also build documentations in such for
 make doc
 ```
 
-If you encountered problems during `make` and wish to re-configure the project, you should firstly clean up intemediate files through:
+If you encountered problems during `make` and wish to re-configure the project, you should firstly clean up intermediate files through:
 
 ```bash
 env -i PATH="/usr/bin" make distclean

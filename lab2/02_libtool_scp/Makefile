@@ -12,8 +12,8 @@ all: main main_static
 %.lo: ../src/%.c
 	libtool --tag=CC --mode=compile $(CC) $(CFLAGS) -c $<
 
+# Here, -rpath is a must. Otherwise libtool will not create shared libraries.
 lib%.la: %.lo
-	# Here, -rpath is a must. Otherwise libtool will not create shared libraries.
 	libtool --tag=CC --mode=link $(CC) $(LDFLAGS) -rpath $(PREFIX)/lib/ -o $@ $<
 
 main: libstupid.la main.lo

@@ -15,7 +15,6 @@ set -x
 "${CC}" "${CFLAGS[@]}" --verbose -E -o main.i ../src/main.c &>main.i.log
 "${CC}" "${CFLAGS[@]}" --verbose -S -o main.s main.i &>main.s.log
 "${CC}" "${CFLAGS[@]}" --verbose -c -o main.o main.s &>main.o.log
-
 "${CC}" "${CFLAGS[@]}" --verbose -c -o stupid.o ../src/stupid.c &>stupid.o.log
 
 # Link

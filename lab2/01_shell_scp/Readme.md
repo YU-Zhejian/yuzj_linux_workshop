@@ -17,7 +17,6 @@ env -i PATH="/usr/bin/" CC=gcc ./build.sh
 env -i PATH="/usr/bin/" \
     CC=clang \
     LDFLAGS="-fuse-ld=lld -L$(pwd) --rtlib=compiler-rt" \
-    CFLAGS="-O2 -Wall -Wextra -DBUILT_UNDER_SHEL -fPIC -fPIE" \
     AR=llvm-ar \
     RANLIB=llvm-ranlib \
     ./build.sh
@@ -26,7 +25,7 @@ env -i PATH="/usr/bin/" \
 For cleanup, use:
 
 ```bash
-rm -f *main* *stupid*
+./clean.sh
 ```
 
 The step-by-step instruction is as follows. Create a new clean shell, and follow the guide:
@@ -36,11 +35,14 @@ The step-by-step instruction is as follows. Create a new clean shell, and follow
 ```bash
 # Where we are.
 PWD="$(pwd)"
+
 # CC: Path to the C compiler. Will use gcc (GCC) or clang (LLVM).
 [ -n "${CC:-}" ] || CC="$(which gcc)"
+
 # AR: Path to static library archive manipulator.
 # Will use ar (GNU BinUtils) or llvm-ar (LLVM).
 [ -n "${AR:-}" ] || AR="$(which ar)"
+
 # RANLIB: Path to index generator for static libraries.
 # Will use ranlib (GNU BinUtils) or llvm-ranlib (LLVM).
 [ -n "${RANLIB:-}" ] || RANLIB="$(which ranlib)"
@@ -49,13 +51,14 @@ PWD="$(pwd)"
 [ -n "${CFLAGS:-}" ] && \
     CFLAGS=(${CFLAGS}) || \
     CFLAGS=("-O2" "-Wall" "-Wextra" "-DBUILT_UNDER_SHELL" "-fPIC" "-fPIE")
+
 # Default linker flags
 [ -n "${LDFLAGS:-}" ] &&  LDFLAGS=(${LDFLAGS}) || LDFLAGS=("-L${PWD}")
 ```
 
 Explanation of used C compiler flags:
 
-- `-O2`: Optimize for speed, level 2. This allows generation of applications that runs faster. Compielrs are usually smarter than you.
+- `-O2`: Optimize for speed, level 2. This allows generation of applications that runs faster. **NOTE** Compilers are usually smarter than you.
 - `-Wall`: Generate all warnings. Useful for development.
 - `-Wextra`: Generate extra warnings. Useful for development.
 - `-DBUILT_UNDER_SHELL`: Define `BUILT_UNDER_SHELL` macro for C pre-processor.
@@ -79,7 +82,7 @@ During the pre-processing phase, the C source code is consumed with pre-processo
 "${CC}" "${CFLAGS[@]}" -E -o main.i ../src/main.c
 ```
 
-The `-E` flag instructs the compiler to stop after pre-processing. The generated file, `main.i`, is a C source file that contains no pre-processor macros (Those started with `#`).
+The `-E` flag instructs the compiler to stop after pre-processing. The generated file, `main.i`, is a C source file that contains minimal pre-processor macros (Those started with `#`). Only those macros that may direct the compiler to do something (e.g., `#pragma`s) or for debug purposes (e.g., line numbers) will be retained.
 
 #### A More Detailed Pre-Processing Example
 
@@ -97,7 +100,7 @@ int main(){
 }
 ```
 
-where the macro `CONDITION_INT` in function `main` was replaced by its value `0`. On the contrary, after defining macro `CONDITION_ONE` through `-D` parameter:
+...where the macro `CONDITION_INT` in function `main` was replaced by its value `0`. On the contrary, after defining macro `CONDITION_ONE` through `-D` parameter:
 
 ```bash
 gcc -E -DCONDITION_ONE -o /dev/stdout cond_comp/test.c | grep -vE '^#|^$'
@@ -147,7 +150,7 @@ echo '#include <some_nasty_file.h>' | \
     gcc -E -x c - -o /dev/null -I"$(pwd)/includes"
 ```
 
-Or through `C_INCLUDE_PATH` environment variable:
+Or through `C_INCLUDE_PATH` or `CPATH` environment variable:
 
 ```bash
 echo '#include <some_nasty_file.h>' | \
@@ -186,7 +189,7 @@ Among those steps, two files are generated: `main.s` contains human-readable ass
 
 ### Creating `libstupid` Library
 
-Before packing `libstupid` into a library we should get its object file.
+Before packing `libstupid` into a library we should generate its object file:
 
 ```bash
 "${CC}" "${CFLAGS[@]}" -c -o stupid.o ../src/stupid.c
@@ -194,7 +197,7 @@ Before packing `libstupid` into a library we should get its object file.
 
 #### Static Library
 
-Static library is usually in format of `libXXXX.a`. It is an archive of object files involved with an index. It can be created using `ar` and `ranlib` from GNU BinUtils. For example:
+Static library is usually in format of `libXXXX.a`. It is an **archive** (like Tar/CPIO archive) of object files involved with an index. It can be created using `ar` and `ranlib` from GNU BinUtils. For example:
 
 ```bash
 "${AR}" rvcs libstupid.a stupid.o
@@ -236,6 +239,10 @@ Arguments used here:
 
 - `-shared`: Instructs GCC to build shared library.
 
+You're not recommended creating shared library through `ld`, as the shared library usually contains references to the C runtime library provided by the compiler (`crti.o`, `clang_rt.crtbegin-x86_64.o`, `libgcc_s.so`, etc.) and the C standard library (`libc.so`). The compiler will be able to sort this right.
+
+For the same reason, you should not link libraries created by different compilers together to prevent errors. This phenomenon is more common in C++ and Rust since their application binary interface (ABI) is different among compilers/versions.
+
 ### Creation of Executables
 
 The following example generates `main` that is linked to shared libraries and `main_static` that is linked to static libraries.
@@ -245,11 +252,22 @@ The following example generates `main` that is linked to shared libraries and `m
 "${CC}" "${LDFLAGS[@]}" -static -static-libgcc -o main_static main.o -lstupid
 ```
 
-- `-lXXXX` is the common form of linking library `XXXX` to the executable. For example, to link zlib (`libz.so`), we uses `-lz`; to like HTSlib (`libhts.so`), we uses `-lhts`.
+- `-lXXXX` is the common form of linking library `XXXX` to the executable. For example, to link zlib (`libz.so`), we use `-lz`; to link HTSlib (`libhts.so`), we uses `-lhts`.
 - `-L${PWD}` sets the linker search path.
 - Arguments started with `-Wl` will be passed to GNU BinUtils linker, `ld`. They are:
-  - `-rpath`, which defines the path where the loader may search. It should be set to where `libstupid.so` will be installed.
+  - `-rpath`, which defines the path where the **loader** may search. It should be set to where `libstupid.so` will be installed.
 - `-static` and `-static-libgcc` requires static linking of targeted libraries (`-lstupid` and implicitly `-lc`, etc.) and GCC runtime library (`-lgcc` and `-lgcc_s`) where code in static libraries will be copied to the executable, thus creating no runtime dependencies.
+
+Note that the linker and the loader are two different programs. Differences involves:
+
+- The former is usually provided by GNU BinUtils/LLVM BinUtils and the latter is usually provided by the C standard library (e.g., glibc, musl, etc).
+- The former usually reads environment variable `LIBRARY_PATH` and the latter usually reads environment variable `LD_LIBRARY_PATH`.
+- The former will search for libraries and create references inside the resulting executable/library, the latter will use the references inside the executable/library to find its dependent libraries and load them into the memory.
+
+See:
+
+- [_LD(1)_](https://www.man7.org/linux/man-pages/man1/ld.1.html): Manual page of GNU BinUtils linker.
+- [_LD.SO(8)_](https://www.man7.org/linux/man-pages/man8/ld.so.8.html): Manual page of GNU libc loader.
 
 ### Common Failures at Link Time
 
@@ -261,20 +279,19 @@ gcc -o main_with_unknown_libs main.o -lstupid1
 # collect2: error: ld returned 1 exit status
 ```
 
-At this time, you should check whether the package that provides `libstupid1.so` is installed. If not, have it installed.
+At this time, you should check whether the package that provides `libstupid1.so` is installed. If not, have it installed. Then you may use `-L` argument or `LIBRARY_PATH` environment variable to tell the linker where to find the library.
 
 A common scenario using Conda or other PMS is that a different version of required library is installed. Here, you may create a symbolic link to cheat the linker. This also works for the loader.
 
 ### Useful Links
 
-- [_Static Linking Considered Harmful_](https://www.akkadia.org/drepper/no_static_linking.html): A blog criticising static linking.
+- [_Static Linking Considered Harmful_](https://www.akkadia.org/drepper/no_static_linking.html): A blog criticizing static linking.
 - [_c++ - Static linking vs dynamic linking - Stack Overflow_](https://stackoverflow.com/questions/1993390/static-linking-vs-dynamic-linking): A StackOverflow question on difference between shared and static linking.
-- [_Dynamic Linking_](http://harmful.cat-v.org/software/dynamic-linking/): An e-mail that criticising dynamic linking.
-- [_LD(1)_](https://www.man7.org/linux/man-pages/man1/ld.1.html): Manual page of GNU Linker, `ld`.
+- [_Dynamic Linking_](http://harmful.cat-v.org/software/dynamic-linking/): An e-mail that criticizing dynamic linking.
 
 ## The Loading Process
 
-The `main_static` file is a static executable, and no loading of exytra libraries are needed. However, `main` file requires loading of additional libraries. This can be inspected using `readelf` command provided by GNU BinUtils:
+The `main_static` file is a static executable, and no loading of extra libraries are needed. However, `main` file requires loading of additional libraries. This can be inspected using `readelf` command provided by GNU BinUtils:
 
 ```bash
 readelf -d main | grep -e NEEDED -e RUNPATH -
@@ -313,4 +330,8 @@ env -i -C /tmp/ LD_LIBRARY_PATH=$(pwd) /tmp/main_no_rpath
 - [_LD.SO(8)_](https://www.man7.org/linux/man-pages/man8/ld.so.8.html): Manual pages for GNU dynamic loader.
 - [_RPATH issue_](https://wiki.debian.org/RpathIssue): Debian explaination on why specifying `RUNPATH` is a bad practice.
 - [_Shared Libraries: Understanding Dynamic Loading_](https://amir.rachum.com/shared-libraries/): A great introduction on shared library and loading.
-- [_Shared Libraries: The Dynamic Linker_ (PDF)](https://www.man7.org/training/download/shlib_dynlinker_slides.pdf): An intermediate-level course on linkers. Written by the author of [_The Linux Programming Interface_](https://www.man7.org/tlpi/index.html) (TLPI book).
+- [_Shared Libraries: The Dynamic Linker_ (PDF)](https://www.man7.org/training/download/shlib_dynlinker_slides.pdf): An intermediate-level course on linker. Written by the author of [_The Linux Programming Interface_](https://www.man7.org/tlpi/index.html) (TLPI book).
+
+## What's Next
+
+So now you've explored the painful compilation process. However, this process is neither automated nor cross-platform. In the next lab, we will achieve those tasks using GNU Make and GNU LibTools.
