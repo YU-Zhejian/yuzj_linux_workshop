@@ -8,6 +8,8 @@ colorlinks: true
 
 # GNU/Linux Workshop by YU ZJ at 2024/07
 
+Updated 2025/04.
+
 The Linux workshop at Zhejiang University for Year 2 \& 3 Bioinformatics BSc students.
 
 > Many scientists and engineers spend much of their lives writing, debugging,
@@ -16,6 +18,7 @@ The Linux workshop at Zhejiang University for Year 2 \& 3 Bioinformatics BSc stu
 > rediscover (or reinvent) the rest of programming on their own. The result?
 > Most spend far too much time wrestling with software, instead of doing
 > research, but have no idea how reliable or efficient their programs are.
+>
 > -- Greg Wilson
 
 ## What to Prepare before the Workshop
@@ -24,22 +27,23 @@ The Linux workshop at Zhejiang University for Year 2 \& 3 Bioinformatics BSc stu
 
 You need an accessible working GNU/Linux installation. No root privilege is required. The following options are acceptable:
 
-- GNU/Linux operating system installed on your computer (multi operating system).
-  - It can co-exist with Microsoft Windows through [GNU Grub](ttps://www.gnu.org/software/grub) bootloader.
-- GNU/Linux operating system installed on a virtual machine. Recommended virtualization platforms:
-  - [VMWare Workstation Player](https://www.vmware.com/products/workstation-player/), works on Microsoft Windows. Does not work that well on GNU/Linux.
-  - [Oracle VM VirtualBox](https://www.virtualbox.org/), works on Microsoft Windows. Does not work that well on GNU/Linux.
-  - [Microsoft Hyper-V](https://learn.microsoft.com/en-us/virtualization/hyper-v-on-windows/), works on Microsoft Windows only.
-  - [`virt-manager`](https://virt-manager.org/), works on GNU/Linux.
-- SSH over lab server.
-- For Microsoft Windows users, install Windows System on Linux (WSL) 2.
-  - [Official Instructions](https://learn.microsoft.com/en-us/windows/wsl/install).
-  - **WARNING**: WSL2 users may encounter filesystem or permission problems. **You have been warned.**
-- For macOS users, install [HomeBrew](https://brew.sh) for packages introduced below.
+#### GNU/Linux on Your Computer (Recommended)
+
+The most convenient way is to install a GNU/Linux distribution on your computer (i.e., multi operating system). It can co-exist with Microsoft Windows through [GNU Grub](ttps://www.gnu.org/software/grub) bootloader. However, please back up your data before doing this. Also, please ensure you have enough disk space with hardware that is compatible with your targeted GNU/Linux distribution.
+
+For the sake of compatibility, you can also install GNU/Linux operating system on a virtual machine. You may use [VMWare Workstation Pro](https://www.vmware.com/products/desktop-hypervisor/workstation-and-fusion/), [Oracle VM VirtualBox](https://www.virtualbox.org/), or [Microsoft Hyper-V](https://learn.microsoft.com/en-us/virtualization/hyper-v-on-windows/). However, reduced performance is expected.
+
+Those who have their account on lab servers/ZJE servers may also SSH to those servers.
+
+For Microsoft Windows users, install Windows System on Linux (WSL) 2 through [instructions](https://learn.microsoft.com/en-us/windows/wsl/install). Note that WSL2 users may encounter filesystem or permission problems, and WSL2 may conflict with other virtualization software and/or Android emulators.
+
+#### POSIX Workarounds for Apple Mac OS X and Microsoft Windows (Discouraged)
+
+- For Apple Mac OS X users, install [HomeBrew](https://brew.sh) for packages introduced below.
   - Read [this](https://mirrors.tuna.tsinghua.edu.cn/help/homebrew/) for faster internet access.
   - You may use those BSD utils bundled by macOS XCode, but they may generate errors. **You have been warned.**
-- For BSD users, install GNU version of your BSD utilities.
 - Using [Cygwin](https://www.cygwin.com/), [MSYS2](https://www.msys2.org/), [MinGW](https://osdn.net/projects/mingw), [MinGW-w64](https://www.mingw-w64.org/), or variants is **STRONGLY DISCOURAGED**.
+- For BSD/Solaris/other UNIX users, install GNU version of your BSD utilities.
 
 ### Packages
 
@@ -55,9 +59,11 @@ sudo apt-get install \
 sudo apt-get install libgcc-12-dev # Replace 12 with GCC version you just installed
 ```
 
-Basis:
+Below are the introduction to some of the packages:
 
-- [GNU CoreUtils](https://www.gnu.org/software/coreutils/), which provides `mkdir` `ls` `chmod` `rm`, etc.
+#### Basic Utilities
+
+- [GNU CoreUtils](https://www.gnu.org/software/coreutils/), which provides `mkdir`, `ls`, `chmod`, `rm`, etc.
   - Those provided by \*BSD, macOS, [plan9](http://tools.suckless.org/9base), [`busybox`](https://busybox.net/) may **NOT** work.
 
   ```bash
@@ -109,7 +115,7 @@ Basis:
   # [...]
   ```
 
-Compiling \& Linking:
+#### Compiling \& Linking
 
 - [GNU Compiler Collection (GCC)](https://gcc.gnu.org/). Need at least `gcc` and `g++`.
 
@@ -185,7 +191,7 @@ rm -f tmp
 
 If any error occurs, your toolchain is not complete!
 
-Building systems:
+#### Building systems
 
 - [GNU Make](https://www.gnu.org/software/make/) for `make`. BSD Make on macOS and \*BSD will **NOT** work.
 
@@ -229,7 +235,7 @@ Building systems:
   # [...]
   ```
 
-Downloading files:
+#### Downloading files
 
 - [GNU WGet](https://www.gnu.org/software/wget/) for `wget`, which downloads required files.
 
@@ -239,7 +245,7 @@ Downloading files:
   # [...]
   ```
 
-Compression:
+#### Compression
 
 - [GNU Tar](https://www.gnu.org/software/tar/) for `tar`.
   
@@ -272,8 +278,6 @@ Compression:
   # bzip2, a block-sorting file compressor.  Version 1.0.8, 13-Jul-2019.
   # [...]
   ```
-
-If you're using LabW Kiki, all packages should have been installed.
 
 ## Organization of Files
 
@@ -312,6 +316,6 @@ file lab2/01_shell_scp/*.{a,so,s,o}
 
 ## Contribute
 
-Contributions are always welcome. However, please raise an issue or contact the author through <Zhejian.23@intl.zju.edu.cn> before submitting pull requests.
+Contributions are always welcome. However, please raise an issue or contact the author through <Zhejianyu@intl.zju.edu.cn> before submitting pull requests.
 
 [^ASK]: You're recommended to read [_How To Ask Questions The Smart Way_](http://www.catb.org/~esr/faqs/smart-questions.html) ([Chinese](https://lug.ustc.edu.cn/wiki/doc/smart-questions/)) before posting questions on public forums, mailing lists, or IRC channels.

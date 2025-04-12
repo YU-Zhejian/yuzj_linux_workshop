@@ -28,10 +28,6 @@ env -i bash --noprofile --norc
 
 Note that `env` is an executable provided by GNU CoreUtils.
 
-## Files in this Directory
-
-- `quiz1.md`: The quiz.
-
 ## Variables
 
 ### Shell Variable
@@ -723,7 +719,3 @@ Secure shell script:
   ```
 
   To prevent opening of subshells.
-
-## Afterwords
-
-Finish quiz 1.
