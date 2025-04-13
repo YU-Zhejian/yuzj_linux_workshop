@@ -2,15 +2,22 @@
 geometry: margin=20mm
 hyperrefoptions:
 - linktoc=all
-fontfamily: noto
 colorlinks: true
 ---
 
 # Stupid C Program using CMake
 
-The presence of `CMakeLists.txt` indicates that this project can be built using [CMake](https://cmake.org/), which is a convenient build system for C/C++. Please note that here the executables and libraries were not named `main` and `libstupid`.
+## Why Learning This Course?
+
+The presence of `CMakeLists.txt` indicates that this project can be built using [CMake](https://cmake.org/), which is a convenient build system for C/C++.
+
+## Learning Objectives
+
+- Learn how to build a C program using CMake.
 
 ## Simple Tutorial
+
+Please note that here the executables and libraries were not named `main` and `libstupid`.
 
 Here we will demonstrate how to build our program using CMake and GNU Make. Firstly, we need to create a separate directory for CMake build:
 

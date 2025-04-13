@@ -1,3 +1,9 @@
+---
+geometry: margin=20mm
+hyperrefoptions:
+- linktoc=all
+colorlinks: true
+---
 # Source Code
 
 You're presented with a common Linux program: A stupid C program that does almost nothing. The program should print:

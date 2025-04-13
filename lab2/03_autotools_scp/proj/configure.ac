@@ -1,5 +1,5 @@
 AC_PREREQ([2.71])
-AC_INIT([stupid_c_prog], [1], [Zhejian.23@intl.zju.edu.cn])
+AC_INIT([stupid_c_prog], [1], [Zhejianyu@intl.zju.edu.cn])
 
 AC_CONFIG_SRCDIR()
 AC_CONFIG_HEADERS([config.h])

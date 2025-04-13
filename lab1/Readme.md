@@ -2,10 +2,15 @@
 geometry: margin=20mm
 hyperrefoptions:
 - linktoc=all
-fontfamily: noto
 colorlinks: true
 ---
-# Lab 1: Shell Commands and Redirection
+# Lab 1: Understanding Shell
+
+## Why Learn This Course?
+
+Shell allows us to interact with the operating system through a command line interface. With proper use of shell, we can automate repetitive tasks.
+
+**NOTE** If you're interested in commands like `ls`, `mv`, `cp`, etc., go to the documentation of [GNU CoreUtils](https://www.gnu.org/software/coreutils/manual/html_node/index.html). Those commands ae neither part of the shell nor covered in this course.
 
 ## Learning Objectives
 

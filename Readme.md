@@ -12,6 +12,8 @@ Updated 2025/04.
 
 The Linux workshop at Zhejiang University for Year 2 \& 3 Bioinformatics B.Sc. students.
 
+## Why Learn This Course?
+
 > Many scientists and engineers spend much of their lives writing, debugging,
 > and maintaining software, but only a handful have ever been taught how to do
 > this effectively: after a couple of introductory courses, they are left to
@@ -20,6 +22,17 @@ The Linux workshop at Zhejiang University for Year 2 \& 3 Bioinformatics B.Sc. s
 > research, but have no idea how reliable or efficient their programs are.
 >
 > -- Greg Wilson
+
+Boinformatics has been a rapidly growing field since the invention of COMPROTEIN in 1962 [^Gauthier_2019]. Under the influence of the Free Software Movement, the boinformatics community has been developing a set of open-source tools to help researchers analyze their data. However, most of those tools works under GNU/Linux, which is not a common platform for researchers. This workshop intend to provide junior bioinformaticians with a brief introduction to the most important concepts, tools, and recommended practices for surviving under GNU/Linux while doing your research with more efficiency and reproducibility.
+
+[^Gauthier_2019]: J. Gauthier, A. T. Vincent, S. J. Charette, and N. Derome, "A brief history of bioinformatics," _Briefings in Bioinformatics_, vol. 20, no. 6, pp. 1981–1996, Nov. 2019, doi: [10.1093/bib/bby063](https://doi.org/10.1093/bib/bby063).
+
+## Learning Objectives
+
+- Learn how to use GNU/Linux operating system for daily bioinformatics use.
+- Learn how to use shell (GNU Bash for example) to interact with the system.
+- Learn how to install/upgrade/remove packages for such system.
+- Learn how to compile C programs from scratch and with building systems, together with how to resolve commonly seen bugs.
 
 ## What to Prepare before the Workshop
 
@@ -290,15 +303,11 @@ If any error occurs, your toolchain is not complete!
 
 ## How to Use These Labs
 
-The labs should be learned in a non-linear manner. i.e., the knowledge taught at the front may rely on what is taught next. If you find yourself hard to understand something, skip it, read the docs, search the web, ask large-language models, or find answers on [Stack Overflow](https://stackoverflow.com/) [^ASK].
+The labs should be learned in a non-linear manner. i.e., the knowledge taught at the front may rely on what is taught next. If you find yourself hard to understand something, skip it, read the manual, search the web, ask large-language models, or find answers on [Stack Overflow](https://stackoverflow.com/) [^ASK].
 
-The labs heavily relies on the official documentation of mentioned software. For example to finish lab1, you may extensively refer to [Bash Reference Manual](https://www.gnu.org/software/bash/manual/bash.html), its manual pages (`man bash`, or see it [online](https://www.man7.org/linux/man-pages//man1/bash.1.html)) or info pages (`info bash`).
+[^ASK]: You're recommended to read [_How To Ask Questions The Smart Way_](http://www.catb.org/~esr/faqs/smart-questions.html) ([Chinese](https://lug.ustc.edu.cn/wiki/doc/smart-questions/)) before posting questions on public forums, mailing lists, or IRC channels.
 
-To read those Markdowns in a more friendly manner, you may compile them to PDF using [`pandoc`](https://pandoc.org/). Note that it requires LaTeX, whose link can be found above.
-
-```bash
-pandoc Readme.md -o Readme.pdf
-```
+The labs heavily relies on the official documentation of mentioned software. For example to finish lab1, you may extensively refer to [_Bash Reference Manual_](https://www.gnu.org/software/bash/manual/bash.html), its manual pages (Read them in the terminal through `man bash`, or see it [online](https://www.man7.org/linux/man-pages//man1/bash.1.html)) or info pages (Read them in the terminal through `info bash`). You may download PDF versions of those manuals (if available) using the `dl-docs.sh` script in the `docs` directory of this repository.
 
 For unfamiliar file formats, you are recommended to use [file](https://www.darwinsys.com/file/). For example:
 
@@ -318,4 +327,21 @@ file lab2/01_shell_scp/*.{a,so,s,o}
 
 Contributions are always welcome. However, please raise an issue or contact the author through <mailto:Zhejianyu@intl.zju.edu.cn> before submitting pull requests.
 
-[^ASK]: You're recommended to read [_How To Ask Questions The Smart Way_](http://www.catb.org/~esr/faqs/smart-questions.html) ([Chinese](https://lug.ustc.edu.cn/wiki/doc/smart-questions/)) before posting questions on public forums, mailing lists, or IRC channels.
+## What's Next?
+
+All bioinformatics students are **HIGHLY** recommended reading the following books:
+
+**V. Buffalo, _Bioinformatics data skills_, First edition. Sebastopol, CA: O’Reilly, 2015. ISBN: 978-1-4493-6737-4**
+
+- This book is especially recommended for bioinformaticians who would like to learn essential computer operational skills fast. I'm surprised that it is not popular.
+- [At Amazon](https://www.amazon.com/Bioinformatics-Data-Skills-Reproducible-Research/dp/1449367372).
+- [At O'Reilly](https://www.oreilly.com/library/view/bioinformatics-data-skills/9781449367480/).
+
+**O. Aoki, _Debian Reference_, 2.125. 2024 [Online]. Available: <https://www.debian.org/doc/manuals/debian-reference/>**
+
+- This is an all-in-one reference manual for Debian-based GNU/Linux distributions (e.g., Ubuntu, Linux Mint, etc.).
+- Highly recommended for GNU/Linux newcomers.
+
+**J. D. Castro, _Introducing Linux Distros_. New York, NY: Apress, 2016. DOI: [10.1007/978-1-4842-1392-6](http://dx.doi.org/10.1007/978-1-4842-1392-6), ISBN: 978-1-4842-1393-3 978-1-4842-1392-6**
+
+- This book would help you to choose GNU/Linux distributions.

@@ -2,11 +2,16 @@
 geometry: margin=20mm
 hyperrefoptions:
 - linktoc=all
-fontfamily: noto
 colorlinks: true
 ---
 
 # Lab 3: Compiling and Installing C Programs from Source
+
+## Learning Objectives
+
+- Compile existing bioinformatics programs in different building systems.
+
+## Files in this Directory
 
 Before progression, execute the following to download all external resources:
 
@@ -15,19 +20,17 @@ src/reproduce.sh
 opt/reproduce.sh
 ```
 
-## Learning Objectives
-
-Compile existing bioinformatics programs in different building systems.
-
-## Files in this Directory
-
 - `src`: External source files.
 - `opt`: Built packages. Which should contain:
-  - `cmake-3.30.0-linux-x86_64`: Binary of a recent version of CMake. The version installed on LabW Kiki is too low to support kAlign.
+  - `cmake-3.30.0-linux-x86_64`: Binary of a recent version of CMake.
 
 ## Install ZLib
 
-ZLib is required for BWA, HTSlib and SAMtools, so we will have it installed in advance. You may skip this step to use ZLib installed on your operating system. For Debian-based systems, it will be [`zlib1g`](https://packages.debian.org/stable/zlib1g) and [`zlib1g-dev`](https://packages.debian.org/stable/zlib1g-dev).
+ZLib is required for BWA, HTSlib and SAMtools, so we will have it installed in advance. You may skip this step to use ZLib installed on your operating system. For Debian-based systems, it will be [`zlib1g`](https://packages.debian.org/stable/zlib1g) and [`zlib1g-dev`](https://packages.debian.org/stable/zlib1g-dev). Here we will build it from source.
+
+**NOTE** Ensure you have a recent GNU CoreUtils version of `env` installed -- The `-C` switch allows execution of commands in a specific working directory and is not presented in old GNU CoreUtils or BSD/`busybox`-flavored `env`.
+
+The presence of `configure` script indicates that this project can be built using AutoTools. So we'll use the classic `./configure` -- `make` -- `make install` workflow:
 
 ```bash
 env -i -C src/zlib-1.3.1 PATH="/usr/bin" \
@@ -35,40 +38,49 @@ env -i -C src/zlib-1.3.1 PATH="/usr/bin" \
 env -i -C src/zlib-1.3.1 PATH="/usr/bin" make install -j8
 ```
 
+We used `-j8` to speed up the build by allowing GNU Make to use 8 processes in parallel.
+
 Now ZLib will be installed to `./opt/lab3`. Let's have a look at the contents inside.
 
 - `include`: Contains header files for zlib (`zconf.h` and `zlib.h`).
 - `lib`: Contains shared and static library files for ZLib (`libz.a` and `libz.so`). 
   - `pkgconfig/zlib.pc`: Contains package configurations which specifies library path, linker flags, compiler flags, etc. This file can be read by [`pkg-config`](https://www.freedesktop.org/wiki/Software/pkg-config/) or [`pkgconf`](http://pkgconf.org/), which is often employed in building systems like CMake and GNU AutoTools.
-- `share/man`: Contains manual pages. You may read them using (VS Code/IDEA users may see `WARNING: terminal is not fully functional` in their built-in terminal):
+  - The `libz.so.1` and `libz.so` files are symbolic links to `libz.so.1.3.1`. With such links, the linker/loader can find the library without knowing its exact version.
+- `share/man`: Contains manual pages. You may read them using:
 
   ```bash
   env -i PATH="/usr/bin/" MANPATH="opt/lab3/share/man" man zlib
   ```
+
+  VS Code/IDEA users may see `WARNING: terminal is not fully functional` in their built-in terminal
   
   **HINT**: Do not try to read manual pages using text editor. Those pages are written in [ROFF](https://www.man7.org/linux/man-pages/man7/roff.7.html)/[TROFF](https://www.troff.org/)/[GROFF](https://www.gnu.org/software/groff/), an ancient (Older than my grandfather, I suppose) markup format that is extremely hard to read.
 
 ## Example of Pure Makefile: BWA
 
-Burrows-Wheeler Aligner (BWA) ([SourceForge](https://bio-bwa.sourceforge.net/), [GitHub](https://github.com/lh3/bwa)) is one of the most popular read aligner for next-generation sequencing reads. Here we will try to compile it from source.
+Burrows-Wheeler Aligner (BWA) ([SourceForge](https://bio-bwa.sourceforge.net/), [GitHub](https://github.com/lh3/bwa)) is one of the most popular read aligner for next-generation sequencing reads.
 
-For GCC later than or equal to 10 (check through `gcc --version`), you need to apply a patch:
+**NOTE** For GCC later than or equal to 10 (check through `gcc --version`), you need to apply a patch:
 
-```bash
-env -i -C src/bwa-debian-0.7.17-7 PATH="/usr/bin/" \
-    patch < src/bwa-debian-0.7.17-7/debian/patches/gcc10.patch
-# patching file rle.h
+  ```bash
+  env -i -C src/bwa-debian-0.7.17-7 PATH="/usr/bin/" \
+      patch < src/bwa-debian-0.7.17-7/debian/patches/gcc10.patch
+  # patching file rle.h
 ```
 
-And build BWA by:
+As there's only `Makefile` without `configure` script, we need to use `make` directly. We may build BWA by:
 
 ```bash
 env -i -C src/bwa-debian-0.7.17-7 \
     PATH="/usr/bin" \
     C_INCLUDE_PATH="$(pwd)/opt/lab3/include" \
     LD_RUN_PATH="$(pwd)/opt/lab3/lib" \
+    LIBRARY_PATH="$(pwd)/opt/lab3/lib" \
+    LD_LIBRARY_PATH="$(pwd)/opt/lab3/lib" \
     make -j8
 ```
+
+TODO: add LD_RUN_PATH to lab2/01
 
 Environment variables used here:
 

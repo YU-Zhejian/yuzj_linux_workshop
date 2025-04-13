@@ -2,7 +2,6 @@
 geometry: margin=20mm
 hyperrefoptions:
 - linktoc=all
-fontfamily: noto
 colorlinks: true
 ---
 
