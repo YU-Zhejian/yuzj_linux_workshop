@@ -4,7 +4,7 @@ set -ue
 mkdir -p _build
 
 pandoc -H header.tex Readme.md -o _build/index.pdf &
-for i in {1..4}; do
+for i in {1..3}; do
     pandoc -H header.tex lab"${i}"/Readme.md -o "_build/lab${i}.pdf" &
 done
 
@@ -22,5 +22,4 @@ qpdf --empty --pages \
     _build/lab2_03_autotools_scp.pdf \
     _build/lab2_04_cmake_scp.pdf \
     _build/lab3.pdf \
-    _build/lab4.pdf \
     -- out.pdf

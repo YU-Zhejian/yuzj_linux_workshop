@@ -254,10 +254,10 @@ The following example generates `main` that is linked to shared libraries and `m
 - `-lXXXX` is the common form of linking library `XXXX` to the executable. For example, to link zlib (`libz.so`), we use `-lz`; to link HTSlib (`libhts.so`), we uses `-lhts`.
 - `-L${PWD}` sets the linker search path.
 - Arguments started with `-Wl` will be passed to GNU BinUtils linker, `ld`. They are:
-  - `-rpath`, which defines the path where the **loader** may search. It should be set to where `libstupid.so` will be installed.
+  - `-rpath`, which defines the path where the **loader** may search. It should be set to where `libstupid.so` will be installed. This flag can also be replaced with `LD_RUN_PATH` environment variable.
 - `-static` and `-static-libgcc` requires static linking of targeted libraries (`-lstupid` and implicitly `-lc`, etc.) and GCC runtime library (`-lgcc` and `-lgcc_s`) where code in static libraries will be copied to the executable, thus creating no runtime dependencies.
 
-Note that the linker and the loader are two different programs. Differences involves:
+Note that the linker and the loader are two different programs. Difference involves:
 
 - The former is usually provided by GNU BinUtils/LLVM BinUtils and the latter is usually provided by the C standard library (e.g., glibc, musl, etc).
 - The former usually reads environment variable `LIBRARY_PATH` and the latter usually reads environment variable `LD_LIBRARY_PATH`.

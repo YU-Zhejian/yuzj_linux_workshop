@@ -80,12 +80,10 @@ env -i -C src/bwa-debian-0.7.17-7 \
     make -j8
 ```
 
-TODO: add LD_RUN_PATH to lab2/01
-
 Environment variables used here:
 
 - `C_INCLUDE_PATH`: Additional C pre-processor header search path. The paths specified by environment variables are often prioritized over system defaults so the `zlib.h` we just installed instead of the system one (if presented) will be used first.
-- `LD_RUN_PATH`: Additional loader search path, like `-Wl,-rpath`.
+- `LD_RUN_PATH`: Additional loader search path, replacing `-Wl,-rpath`.
 
 Manually install `bwa` and its documentations to desired place:
 
@@ -123,7 +121,7 @@ env -i PATH="/usr/bin/" \
 
 ## Example of GNU AutoTools: SAMtools
 
-SAMtools ([Official](http://www.htslib.org), [GitHub](https://github.com/samtools/samtools), [SourceForge](https://sourceforge.net/projects/samtools)) is a swiss-army knife for manipulating alignment files. Although SAMtools have a bundled HTSLib, we will build our own since the default configuration involves libraries that may not have been built. The `configure` script had already been generated, so we only need to:
+SAMtools ([Official](http://www.htslib.org), [GitHub](https://github.com/samtools/samtools), [SourceForge](https://sourceforge.net/projects/samtools)) is a Swiss army knife for manipulating alignment files. Although SAMtools have a bundled HTSLib, we will build our own since the default configuration involves libraries that may not have been built. The `configure` script had already been generated, so we only need to:
 
 ```bash
 env -i -C src/htslib-1.20 PATH="/usr/bin" \
@@ -211,7 +209,7 @@ env -C src/kalign-debian-1%3.4.0-1 mkdir -p build
 env -C src/kalign-debian-1%3.4.0-1/build -i \
     PATH="$(pwd)/opt/cmake-3.30.0-linux-x86_64/bin:/usr/bin" \
     cmake .. \
-    -DCMAKE_INSTALL_PREFIX="$(pwd)/opt/kalign-debian-1_3.4.0"
+    -DCMAKE_INSTALL_PREFIX="$(pwd)/opt/lab3"
 env -C src/kalign-debian-1%3.4.0-1/build -i \
     PATH="$(pwd)/opt/cmake-3.30.0-linux-x86_64/bin:/usr/bin" \
     make -j8 install
@@ -220,7 +218,8 @@ env -C src/kalign-debian-1%3.4.0-1/build -i \
 Get back to the current directory and test whether kAlign is working using:
 
 ```bash
-opt/kalign-debian-1_3.4.0/bin/kalign --version
+opt/lab3/bin/kalign --version
+# kalign 3.4.0
 ```
 
 ## Homework
